@@ -1,0 +1,142 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import {
+  useMutation,
+  UseMutationOptions,
+  UseMutationResult,
+  useQueryClient,
+} from '@tanstack/react-query';
+
+/**
+ * 기본 GoalMutation 훅
+ */
+export function useGoalMutation<
+  TData = unknown,
+  TError extends Error = Error,
+  TVariables = void,
+>(
+  mutationFn: (variables: TVariables) => Promise<TData>,
+  options?: Omit<UseMutationOptions<TData, TError, TVariables>, 'mutationFn'>
+): UseMutationResult<TData, TError, TVariables> {
+  return useMutation<TData, TError, TVariables>({
+    mutationFn,
+    ...options,
+  });
+}
+
+/**
+ * 낙관적 업데이트를 지원하는 mutation 훅
+ */
+export function useGoalOptimisticMutation<
+  TData = unknown,
+  TError extends Error = Error,
+  TVariables = void,
+  TQueryData = unknown,
+>(
+  mutationFn: (variables: TVariables) => Promise<TData>,
+  queryKey: unknown[],
+  updateFn: (
+    oldData: TQueryData | undefined,
+    variables: TVariables
+  ) => TQueryData,
+  options?: Omit<UseMutationOptions<TData, TError, TVariables>, 'mutationFn'>
+): UseMutationResult<TData, TError, TVariables> {
+  const queryClient = useQueryClient();
+
+  return useMutation<TData, TError, TVariables>({
+    mutationFn,
+    ...options,
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey });
+
+      const previousData = queryClient.getQueryData<TQueryData>(queryKey);
+
+      if (previousData !== undefined) {
+        queryClient.setQueryData(queryKey, updateFn(previousData, variables));
+      }
+
+      return { previousData };
+    },
+    onError: (_err, _variables, context: any) => {
+      if (context?.previousData !== undefined) {
+        queryClient.setQueryData(queryKey, context.previousData);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+  });
+}
+
+/**
+ * 여러 쿼리에 대한 낙관적 업데이트를 지원하는 mutation 훅
+ */
+export function useGoalMultiOptimisticMutation<
+  TData = unknown,
+  TError extends Error = Error,
+  TVariables = void,
+  TQueryData = unknown,
+>(
+  mutationFn: (variables: TVariables) => Promise<TData>,
+  optimisticQueries: Array<{
+    queryKey: unknown[];
+    updateFn: (
+      oldData: TQueryData | undefined,
+      variables: TVariables
+    ) => TQueryData;
+  }>,
+  options?: Omit<UseMutationOptions<TData, TError, TVariables>, 'mutationFn'>
+): UseMutationResult<TData, TError, TVariables> {
+  const queryClient = useQueryClient();
+
+  return useMutation<TData, TError, TVariables>({
+    mutationFn,
+    ...options,
+    onMutate: async (variables) => {
+      await Promise.all(
+        optimisticQueries.map(({ queryKey }) =>
+          queryClient.cancelQueries({ queryKey })
+        )
+      );
+
+      const previousDataMap = new Map<string, TQueryData | undefined>();
+
+      optimisticQueries.forEach(({ queryKey, updateFn }) => {
+        const queryKeyStr = JSON.stringify(queryKey);
+        const previousData = queryClient.getQueryData<TQueryData>(queryKey);
+        previousDataMap.set(queryKeyStr, previousData);
+
+        if (previousData !== undefined) {
+          queryClient.setQueryData(
+            queryKey,
+            updateFn(previousData, variables)
+          );
+        }
+      });
+
+      return { previousDataMap };
+    },
+    onError: (_err, _variables, context: any) => {
+      if (context?.previousDataMap) {
+        const previousDataMap = context.previousDataMap as Map<
+          string,
+          TQueryData | undefined
+        >;
+
+        optimisticQueries.forEach(({ queryKey }) => {
+          const queryKeyStr = JSON.stringify(queryKey);
+          const previousData = previousDataMap.get(queryKeyStr);
+
+          if (previousData !== undefined) {
+            queryClient.setQueryData(queryKey, previousData);
+          }
+        });
+      }
+    },
+    onSettled: () => {
+      optimisticQueries.forEach(({ queryKey }) => {
+        queryClient.invalidateQueries({ queryKey });
+      });
+    },
+  });
+}
