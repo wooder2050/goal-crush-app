@@ -13,6 +13,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
 import { AuthProvider } from '@/components/AuthProvider';
+import { OfflineBanner } from '@/components/OfflineBanner';
 import { QueryProvider } from '@/lib/providers';
 
 SplashScreen.preventAutoHideAsync();
@@ -38,6 +39,7 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <QueryProvider>
+        <OfflineBanner />
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="auth" options={{ presentation: 'modal' }} />
