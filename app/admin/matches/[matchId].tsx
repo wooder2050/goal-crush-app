@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
@@ -21,6 +21,7 @@ import {
   getAdminSubstitutions,
   updateAdminMatch,
 } from '@/api/admin';
+import { useAuth } from '@/components/AuthProvider';
 import { ErrorState } from '@/components/ErrorState';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Button } from '@/components/ui/Button';
@@ -39,6 +40,7 @@ const TABS: { key: TabKey; label: string }[] = [
 ];
 
 export default function AdminMatchDetailScreen() {
+  const { isAdmin, isLoading: authLoading } = useAuth();
   const { matchId: rawId } = useLocalSearchParams<{ matchId: string }>();
   const matchId = Number(rawId);
   const router = useRouter();
@@ -53,8 +55,11 @@ export default function AdminMatchDetailScreen() {
   } = useQuery({
     queryKey: ['adminMatch', matchId],
     queryFn: () => getAdminMatch(matchId),
-    enabled: !isNaN(matchId),
+    enabled: !isNaN(matchId) && isAdmin,
   });
+
+  if (authLoading) return <LoadingSpinner />;
+  if (!isAdmin) return <Redirect href="/" />;
 
   const deleteMutation = useMutation({
     mutationFn: () => deleteAdminMatch(matchId),

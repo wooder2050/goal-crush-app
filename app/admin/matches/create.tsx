@@ -1,17 +1,23 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Stack, useRouter } from 'expo-router';
+import { Redirect, Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, ScrollView, Text, TextInput } from 'react-native';
 
 import { createAdminMatch } from '@/api/admin';
 import { getAllSeasonsPrisma } from '@/api/seasons';
 import { getTeamsPrisma } from '@/api/teams';
+import { useAuth } from '@/components/AuthProvider';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 
 export default function CreateMatchScreen() {
+  const { isAdmin, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  if (authLoading) return <LoadingSpinner />;
+  if (!isAdmin) return <Redirect href="/" />;
 
   const { data: seasons } = useQuery({
     queryKey: ['allSeasons'],

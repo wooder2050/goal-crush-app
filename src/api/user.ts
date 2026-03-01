@@ -2,7 +2,7 @@ import { apiFetch } from '@/api/client';
 import type { UserProfile, UserProfileResponse } from '@/types/user';
 
 export const getUserProfile = async (): Promise<UserProfileResponse> => {
-  return apiFetch('/api/user/profile');
+  return apiFetch('/api/users/profile');
 };
 
 export const updateNickname = async (nickname: string): Promise<UserProfile> => {
