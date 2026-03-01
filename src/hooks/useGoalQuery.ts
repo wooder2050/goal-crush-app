@@ -24,16 +24,11 @@ export function useGoalQuery<
 >(
   apiFn: TQueryFn,
   params: TParams,
-  options?: Omit<
-    UseQueryOptions<TData, Error, TData, QueryKey>,
-    'queryKey' | 'queryFn'
-  >
+  options?: Omit<UseQueryOptions<TData, Error, TData, QueryKey>, 'queryKey' | 'queryFn'>
 ): UseQueryResult<TData, Error> {
   const customKey = (apiFn as any)?.queryKey as string | undefined;
   const safeName =
-    customKey ||
-    (typeof apiFn === 'function' && (apiFn as { name?: string }).name) ||
-    'anonymous';
+    customKey || (typeof apiFn === 'function' && (apiFn as { name?: string }).name) || 'anonymous';
 
   return useQuery<TData, Error, TData, QueryKey>({
     queryKey: [safeName, JSON.stringify(params)],
@@ -52,16 +47,11 @@ export function useGoalSuspenseQuery<
 >(
   apiFn: TQueryFn,
   params: TParams,
-  options?: Omit<
-    UseSuspenseQueryOptions<TData, Error, TData, QueryKey>,
-    'queryKey' | 'queryFn'
-  >
+  options?: Omit<UseSuspenseQueryOptions<TData, Error, TData, QueryKey>, 'queryKey' | 'queryFn'>
 ): UseSuspenseQueryResult<TData, Error> {
   const customKey = (apiFn as any)?.queryKey as string | undefined;
   const safeName =
-    customKey ||
-    (typeof apiFn === 'function' && (apiFn as { name?: string }).name) ||
-    'anonymous';
+    customKey || (typeof apiFn === 'function' && (apiFn as { name?: string }).name) || 'anonymous';
 
   return useSuspenseQuery<TData, Error, TData, QueryKey>({
     queryKey: [safeName, JSON.stringify(params)],
@@ -87,17 +77,11 @@ export type UseGoalInfiniteQueryOptions<
   'queryKey' | 'queryFn'
 >;
 
-export function useGoalInfiniteQuery<
-  TQueryFn extends (...args: any[]) => Promise<any>,
-  TPageParam,
->(
+export function useGoalInfiniteQuery<TQueryFn extends (...args: any[]) => Promise<any>, TPageParam>(
   apiFn: TQueryFn,
   getParams: (arg: { pageParam: TPageParam }) => Parameters<TQueryFn>,
   options: UseGoalInfiniteQueryOptions<TQueryFn, TPageParam>
-): UseInfiniteQueryResult<
-  InfiniteData<Awaited<ReturnType<TQueryFn>>, TPageParam>,
-  Error
-> {
+): UseInfiniteQueryResult<InfiniteData<Awaited<ReturnType<TQueryFn>>, TPageParam>, Error> {
   const typed = options as UseInfiniteQueryOptions<
     Awaited<ReturnType<TQueryFn>>,
     Error,
@@ -109,9 +93,7 @@ export function useGoalInfiniteQuery<
   const paramsForKey = getParams({ pageParam: initialPageParam as TPageParam });
   const customKey = (apiFn as any)?.queryKey as string | undefined;
   const safeName =
-    customKey ||
-    (typeof apiFn === 'function' && (apiFn as { name?: string }).name) ||
-    'anonymous';
+    customKey || (typeof apiFn === 'function' && (apiFn as { name?: string }).name) || 'anonymous';
   const keyParams = JSON.stringify(paramsForKey);
 
   // Remove forbidden keys without introducing unused vars

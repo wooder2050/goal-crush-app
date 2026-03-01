@@ -1,0 +1,15 @@
+{
+  "entry": ["app/**/*.{ts,tsx}", "src/**/*.{ts,tsx}"],
+  "project": ["app/**/*.{ts,tsx}", "src/**/*.{ts,tsx}"],
+  "ignoreDependencies": [
+    "babel-preset-expo",
+    "react-native-worklets",
+    "expo-updates",
+    "@hookform/resolvers",
+    "class-variance-authority",
+    "clsx",
+    "date-fns",
+    "react-hook-form",
+    "zod"
+  ]
+}

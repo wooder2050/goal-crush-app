@@ -1,5 +1,6 @@
-import { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useState } from 'react';
+
 import { DEFAULT_STALE_TIME } from '@/constants/query';
 
 interface ProvidersProps {
@@ -22,7 +23,5 @@ export function QueryProvider({ children }: ProvidersProps) {
       })
   );
 
-  return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }

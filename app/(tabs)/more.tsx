@@ -1,16 +1,17 @@
-import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
-  Users,
-  UserCog,
+  ChevronRight,
+  Heart,
+  MessageSquare,
+  Shield,
   Star,
   Trophy,
-  MessageSquare,
-  Heart,
   User,
-  Shield,
-  ChevronRight,
+  UserCog,
+  Users,
 } from 'lucide-react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+
 import { useAuth } from '@/components/AuthProvider';
 
 interface MenuItem {
@@ -94,9 +95,7 @@ export default function MoreScreen() {
             onPress={() => handlePress(item)}
           >
             {item.icon}
-            <Text className="ml-3 flex-1 text-base text-neutral-800">
-              {item.label}
-            </Text>
+            <Text className="ml-3 flex-1 text-base text-neutral-800">{item.label}</Text>
             <ChevronRight size={18} color="#a3a3a3" />
           </Pressable>
         ))}
@@ -111,9 +110,7 @@ export default function MoreScreen() {
             className="mt-3 items-center rounded-lg bg-primary py-3"
             onPress={() => router.push('/auth/sign-in')}
           >
-            <Text className="text-sm font-semibold text-white">
-              로그인
-            </Text>
+            <Text className="text-sm font-semibold text-white">로그인</Text>
           </Pressable>
         </View>
       )}

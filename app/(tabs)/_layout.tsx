@@ -1,11 +1,5 @@
 import { Tabs } from 'expo-router';
-import {
-  Home,
-  Calendar,
-  Users,
-  BarChart3,
-  Menu,
-} from 'lucide-react-native';
+import { BarChart3, Calendar, Home, Menu, Users } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -27,45 +21,35 @@ export default function TabLayout() {
         name="index"
         options={{
           title: '홈',
-          tabBarIcon: ({ color, size }) => (
-            <Home size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="seasons"
         options={{
           title: '시즌',
-          tabBarIcon: ({ color, size }) => (
-            <Calendar size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Calendar size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="players"
         options={{
           title: '선수',
-          tabBarIcon: ({ color, size }) => (
-            <Users size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Users size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="stats"
         options={{
           title: '통계',
-          tabBarIcon: ({ color, size }) => (
-            <BarChart3 size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <BarChart3 size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="more"
         options={{
           title: '더보기',
-          tabBarIcon: ({ color, size }) => (
-            <Menu size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Menu size={size} color={color} />,
         }}
       />
     </Tabs>

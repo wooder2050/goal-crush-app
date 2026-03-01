@@ -10,11 +10,7 @@ import {
 /**
  * 기본 GoalMutation 훅
  */
-export function useGoalMutation<
-  TData = unknown,
-  TError extends Error = Error,
-  TVariables = void,
->(
+export function useGoalMutation<TData = unknown, TError extends Error = Error, TVariables = void>(
   mutationFn: (variables: TVariables) => Promise<TData>,
   options?: Omit<UseMutationOptions<TData, TError, TVariables>, 'mutationFn'>
 ): UseMutationResult<TData, TError, TVariables> {
@@ -35,14 +31,16 @@ export function useGoalOptimisticMutation<
 >(
   mutationFn: (variables: TVariables) => Promise<TData>,
   queryKey: unknown[],
-  updateFn: (
-    oldData: TQueryData | undefined,
-    variables: TVariables
-  ) => TQueryData,
+  updateFn: (oldData: TQueryData | undefined, variables: TVariables) => TQueryData,
   options?: Omit<UseMutationOptions<TData, TError, TVariables>, 'mutationFn'>
 ): UseMutationResult<TData, TError, TVariables> {
   const queryClient = useQueryClient();
-  const { onMutate: userOnMutate, onError: userOnError, onSettled: userOnSettled, ...restOptions } = options ?? {};
+  const {
+    onMutate: userOnMutate,
+    onError: userOnError,
+    onSettled: userOnSettled,
+    ...restOptions
+  } = options ?? {};
 
   return useMutation<TData, TError, TVariables>({
     mutationFn,
@@ -84,24 +82,24 @@ export function useGoalMultiOptimisticMutation<
   mutationFn: (variables: TVariables) => Promise<TData>,
   optimisticQueries: Array<{
     queryKey: unknown[];
-    updateFn: (
-      oldData: TQueryData | undefined,
-      variables: TVariables
-    ) => TQueryData;
+    updateFn: (oldData: TQueryData | undefined, variables: TVariables) => TQueryData;
   }>,
   options?: Omit<UseMutationOptions<TData, TError, TVariables>, 'mutationFn'>
 ): UseMutationResult<TData, TError, TVariables> {
   const queryClient = useQueryClient();
-  const { onMutate: userOnMutate, onError: userOnError, onSettled: userOnSettled, ...restOptions } = options ?? {};
+  const {
+    onMutate: userOnMutate,
+    onError: userOnError,
+    onSettled: userOnSettled,
+    ...restOptions
+  } = options ?? {};
 
   return useMutation<TData, TError, TVariables>({
     mutationFn,
     ...restOptions,
     onMutate: async (variables: TVariables) => {
       await Promise.all(
-        optimisticQueries.map(({ queryKey }) =>
-          queryClient.cancelQueries({ queryKey })
-        )
+        optimisticQueries.map(({ queryKey }) => queryClient.cancelQueries({ queryKey }))
       );
 
       const previousDataMap = new Map<string, TQueryData | undefined>();
@@ -112,10 +110,7 @@ export function useGoalMultiOptimisticMutation<
         previousDataMap.set(queryKeyStr, previousData);
 
         if (previousData !== undefined) {
-          queryClient.setQueryData(
-            queryKey,
-            updateFn(previousData, variables)
-          );
+          queryClient.setQueryData(queryKey, updateFn(previousData, variables));
         }
       });
 
@@ -124,10 +119,7 @@ export function useGoalMultiOptimisticMutation<
     },
     onError: (err: TError, variables: TVariables, context: any) => {
       if (context?.previousDataMap) {
-        const previousDataMap = context.previousDataMap as Map<
-          string,
-          TQueryData | undefined
-        >;
+        const previousDataMap = context.previousDataMap as Map<string, TQueryData | undefined>;
 
         optimisticQueries.forEach(({ queryKey }) => {
           const queryKeyStr = JSON.stringify(queryKey);

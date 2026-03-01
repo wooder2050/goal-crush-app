@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { View, Text, TextInput, Pressable, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Alert, Pressable, Text, TextInput, View } from 'react-native';
+
 import { useAuth } from '@/components/AuthProvider';
 
 export default function SignInScreen() {
@@ -21,10 +22,7 @@ export default function SignInScreen() {
       await signInWithEmail(email, password);
       router.back();
     } catch (error) {
-      Alert.alert(
-        '로그인 실패',
-        error instanceof Error ? error.message : '다시 시도해주세요.'
-      );
+      Alert.alert('로그인 실패', error instanceof Error ? error.message : '다시 시도해주세요.');
     } finally {
       setIsLoading(false);
     }
@@ -37,9 +35,7 @@ export default function SignInScreen() {
       </Text>
 
       <View className="mb-4">
-        <Text className="mb-1 text-sm font-medium text-neutral-700">
-          이메일
-        </Text>
+        <Text className="mb-1 text-sm font-medium text-neutral-700">이메일</Text>
         <TextInput
           className="rounded-lg border border-neutral-200 px-4 py-3 text-base text-neutral-900"
           placeholder="이메일을 입력해주세요"
@@ -53,9 +49,7 @@ export default function SignInScreen() {
       </View>
 
       <View className="mb-6">
-        <Text className="mb-1 text-sm font-medium text-neutral-700">
-          비밀번호
-        </Text>
+        <Text className="mb-1 text-sm font-medium text-neutral-700">비밀번호</Text>
         <TextInput
           className="rounded-lg border border-neutral-200 px-4 py-3 text-base text-neutral-900"
           placeholder="비밀번호를 입력해주세요"
@@ -76,13 +70,9 @@ export default function SignInScreen() {
         </Text>
       </Pressable>
 
-      <Pressable
-        className="mt-4 items-center py-2"
-        onPress={() => router.push('/auth/sign-up')}
-      >
+      <Pressable className="mt-4 items-center py-2" onPress={() => router.push('/auth/sign-up')}>
         <Text className="text-sm text-neutral-500">
-          계정이 없으신가요?{' '}
-          <Text className="font-semibold text-primary">회원가입</Text>
+          계정이 없으신가요? <Text className="font-semibold text-primary">회원가입</Text>
         </Text>
       </Pressable>
     </View>

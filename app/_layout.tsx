@@ -1,12 +1,19 @@
-import { useEffect } from 'react';
+import '../global.css';
+
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  useFonts,
+} from '@expo-google-fonts/inter';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
+
 import { AuthProvider } from '@/components/AuthProvider';
 import { QueryProvider } from '@/lib/providers';
-
-import '../global.css';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -33,10 +40,7 @@ export default function RootLayout() {
       <QueryProvider>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
-          <Stack.Screen
-            name="auth"
-            options={{ presentation: 'modal' }}
-          />
+          <Stack.Screen name="auth" options={{ presentation: 'modal' }} />
         </Stack>
         <StatusBar style="dark" />
       </QueryProvider>

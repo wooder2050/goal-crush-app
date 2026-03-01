@@ -1,11 +1,6 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-} from 'react';
 import { Session, User } from '@supabase/supabase-js';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+
 import { supabase } from '@/lib/supabase';
 
 interface AuthContextType {
@@ -25,22 +20,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchAdminStatus = useCallback(async (userId: string) => {
-    try {
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_BASE_URL ?? 'https://www.gtndatacenter.com'}/api/user/profile`,
-        {
-          headers: { Authorization: `Bearer ${session?.access_token}` },
+  const fetchAdminStatus = useCallback(
+    async (_userId: string) => {
+      try {
+        const response = await fetch(
+          `${process.env.EXPO_PUBLIC_API_BASE_URL ?? 'https://www.gtndatacenter.com'}/api/user/profile`,
+          {
+            headers: { Authorization: `Bearer ${session?.access_token}` },
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setIsAdmin(data?.is_admin ?? false);
         }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setIsAdmin(data?.is_admin ?? false);
+      } catch {
+        setIsAdmin(false);
       }
-    } catch {
-      setIsAdmin(false);
-    }
-  }, [session?.access_token]);
+    },
+    [session?.access_token]
+  );
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session: s } }) => {
@@ -65,24 +63,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, [fetchAdminStatus]);
 
-  const signInWithEmail = useCallback(
-    async (email: string, password: string) => {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
-    },
-    []
-  );
+  const signInWithEmail = useCallback(async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) throw error;
+  }, []);
 
-  const signUpWithEmail = useCallback(
-    async (email: string, password: string) => {
-      const { error } = await supabase.auth.signUp({ email, password });
-      if (error) throw error;
-    },
-    []
-  );
+  const signUpWithEmail = useCallback(async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) throw error;
+  }, []);
 
   const signOut = useCallback(async () => {
     const { error } = await supabase.auth.signOut();

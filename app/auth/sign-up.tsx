@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { View, Text, TextInput, Pressable, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Alert, Pressable, Text, TextInput, View } from 'react-native';
+
 import { useAuth } from '@/components/AuthProvider';
 
 export default function SignUpScreen() {
@@ -34,10 +35,7 @@ export default function SignUpScreen() {
         { text: '확인', onPress: () => router.back() },
       ]);
     } catch (error) {
-      Alert.alert(
-        '회원가입 실패',
-        error instanceof Error ? error.message : '다시 시도해주세요.'
-      );
+      Alert.alert('회원가입 실패', error instanceof Error ? error.message : '다시 시도해주세요.');
     } finally {
       setIsLoading(false);
     }
@@ -45,14 +43,10 @@ export default function SignUpScreen() {
 
   return (
     <View className="flex-1 bg-white px-6 pt-8">
-      <Text className="mb-8 text-center text-2xl font-bold text-neutral-900">
-        회원가입
-      </Text>
+      <Text className="mb-8 text-center text-2xl font-bold text-neutral-900">회원가입</Text>
 
       <View className="mb-4">
-        <Text className="mb-1 text-sm font-medium text-neutral-700">
-          이메일
-        </Text>
+        <Text className="mb-1 text-sm font-medium text-neutral-700">이메일</Text>
         <TextInput
           className="rounded-lg border border-neutral-200 px-4 py-3 text-base text-neutral-900"
           placeholder="이메일을 입력해주세요"
@@ -66,9 +60,7 @@ export default function SignUpScreen() {
       </View>
 
       <View className="mb-4">
-        <Text className="mb-1 text-sm font-medium text-neutral-700">
-          비밀번호
-        </Text>
+        <Text className="mb-1 text-sm font-medium text-neutral-700">비밀번호</Text>
         <TextInput
           className="rounded-lg border border-neutral-200 px-4 py-3 text-base text-neutral-900"
           placeholder="6자 이상 입력해주세요"
@@ -80,9 +72,7 @@ export default function SignUpScreen() {
       </View>
 
       <View className="mb-6">
-        <Text className="mb-1 text-sm font-medium text-neutral-700">
-          비밀번호 확인
-        </Text>
+        <Text className="mb-1 text-sm font-medium text-neutral-700">비밀번호 확인</Text>
         <TextInput
           className="rounded-lg border border-neutral-200 px-4 py-3 text-base text-neutral-900"
           placeholder="비밀번호를 다시 입력해주세요"
@@ -103,13 +93,9 @@ export default function SignUpScreen() {
         </Text>
       </Pressable>
 
-      <Pressable
-        className="mt-4 items-center py-2"
-        onPress={() => router.back()}
-      >
+      <Pressable className="mt-4 items-center py-2" onPress={() => router.back()}>
         <Text className="text-sm text-neutral-500">
-          이미 계정이 있으신가요?{' '}
-          <Text className="font-semibold text-primary">로그인</Text>
+          이미 계정이 있으신가요? <Text className="font-semibold text-primary">로그인</Text>
         </Text>
       </Pressable>
     </View>
