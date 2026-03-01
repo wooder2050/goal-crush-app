@@ -1,7 +1,7 @@
 import { ENV } from '@/config/env';
 import { supabase } from '@/lib/supabase';
 
-export async function apiFetch(path: string, options?: RequestInit): Promise<Response> {
+export async function apiFetch<T = unknown>(path: string, options?: RequestInit): Promise<T> {
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -20,11 +20,17 @@ export async function apiFetch(path: string, options?: RequestInit): Promise<Res
     headers['Content-Type'] = 'application/json';
   }
 
-  return fetch(url, {
+  const response = await fetch(url, {
     ...options,
     headers: {
       ...headers,
       ...options?.headers,
     },
   });
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status} ${response.statusText}`);
+  }
+
+  return response.json() as Promise<T>;
 }
