@@ -42,11 +42,12 @@ export function useGoalOptimisticMutation<
   options?: Omit<UseMutationOptions<TData, TError, TVariables>, 'mutationFn'>
 ): UseMutationResult<TData, TError, TVariables> {
   const queryClient = useQueryClient();
+  const { onMutate: userOnMutate, onError: userOnError, onSettled: userOnSettled, ...restOptions } = options ?? {};
 
   return useMutation<TData, TError, TVariables>({
     mutationFn,
-    ...options,
-    onMutate: async (variables) => {
+    ...restOptions,
+    onMutate: async (variables: TVariables) => {
       await queryClient.cancelQueries({ queryKey });
 
       const previousData = queryClient.getQueryData<TQueryData>(queryKey);
@@ -55,17 +56,20 @@ export function useGoalOptimisticMutation<
         queryClient.setQueryData(queryKey, updateFn(previousData, variables));
       }
 
-      return { previousData };
+      const userContext = await (userOnMutate as any)?.(variables);
+      return { previousData, ...((userContext as object) ?? {}) };
     },
-    onError: (_err, _variables, context: any) => {
+    onError: (err: TError, variables: TVariables, context: any) => {
       if (context?.previousData !== undefined) {
         queryClient.setQueryData(queryKey, context.previousData);
       }
+      (userOnError as any)?.(err, variables, context);
     },
-    onSettled: () => {
+    onSettled: (data: any, error: any, variables: TVariables, context: any) => {
       queryClient.invalidateQueries({ queryKey });
+      (userOnSettled as any)?.(data, error, variables, context);
     },
-  });
+  } as any);
 }
 
 /**
@@ -88,11 +92,12 @@ export function useGoalMultiOptimisticMutation<
   options?: Omit<UseMutationOptions<TData, TError, TVariables>, 'mutationFn'>
 ): UseMutationResult<TData, TError, TVariables> {
   const queryClient = useQueryClient();
+  const { onMutate: userOnMutate, onError: userOnError, onSettled: userOnSettled, ...restOptions } = options ?? {};
 
   return useMutation<TData, TError, TVariables>({
     mutationFn,
-    ...options,
-    onMutate: async (variables) => {
+    ...restOptions,
+    onMutate: async (variables: TVariables) => {
       await Promise.all(
         optimisticQueries.map(({ queryKey }) =>
           queryClient.cancelQueries({ queryKey })
@@ -114,9 +119,10 @@ export function useGoalMultiOptimisticMutation<
         }
       });
 
-      return { previousDataMap };
+      const userContext = await (userOnMutate as any)?.(variables);
+      return { previousDataMap, ...((userContext as object) ?? {}) };
     },
-    onError: (_err, _variables, context: any) => {
+    onError: (err: TError, variables: TVariables, context: any) => {
       if (context?.previousDataMap) {
         const previousDataMap = context.previousDataMap as Map<
           string,
@@ -132,11 +138,13 @@ export function useGoalMultiOptimisticMutation<
           }
         });
       }
+      (userOnError as any)?.(err, variables, context);
     },
-    onSettled: () => {
+    onSettled: (data: any, error: any, variables: TVariables, context: any) => {
       optimisticQueries.forEach(({ queryKey }) => {
         queryClient.invalidateQueries({ queryKey });
       });
+      (userOnSettled as any)?.(data, error, variables, context);
     },
-  });
+  } as any);
 }

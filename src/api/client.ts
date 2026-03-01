@@ -11,13 +11,23 @@ export async function apiFetch(
 
   const url = `${ENV.API_BASE_URL}${path}`;
 
+  const headers: Record<string, string> = {
+    ...(session?.access_token && {
+      Authorization: `Bearer ${session.access_token}`,
+    }),
+  };
+
+  // FormData일 때는 Content-Type을 설정하지 않음 (브라우저/RN이 자동으로 boundary 포함)
+  const isFormData =
+    typeof FormData !== 'undefined' && options?.body instanceof FormData;
+  if (!isFormData) {
+    headers['Content-Type'] = 'application/json';
+  }
+
   return fetch(url, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
-      ...(session?.access_token && {
-        Authorization: `Bearer ${session.access_token}`,
-      }),
+      ...headers,
       ...options?.headers,
     },
   });

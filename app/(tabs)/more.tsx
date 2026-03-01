@@ -69,20 +69,25 @@ const menuItems: MenuItem[] = [
 
 export default function MoreScreen() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
 
   const handlePress = (item: MenuItem) => {
-    if (item.requiresAuth && !user) {
+    if ((item.requiresAuth || item.requiresAdmin) && !user) {
       router.push('/auth/sign-in');
       return;
     }
     router.push(item.href as never);
   };
 
+  const visibleItems = menuItems.filter((item) => {
+    if (item.requiresAdmin && !isAdmin) return false;
+    return true;
+  });
+
   return (
     <ScrollView className="flex-1 bg-white">
       <View className="py-2">
-        {menuItems.map((item) => (
+        {visibleItems.map((item) => (
           <Pressable
             key={item.href}
             className="flex-row items-center px-4 py-4 active:bg-neutral-50"
