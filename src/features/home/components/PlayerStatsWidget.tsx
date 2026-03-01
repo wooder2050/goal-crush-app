@@ -64,11 +64,15 @@ function StatColumn({
       <Text className="mb-2 text-center text-xs font-semibold text-neutral-500">{title}</Text>
       {players.slice(0, 5).map((p, i) => (
         <PlayerRow
-          key={p.player_id}
+          key={p.player_id ?? i}
           player={p}
           rank={i + 1}
           valueLabel={getValue(p)}
-          onPress={() => router.push(`/players/${p.player_id}`)}
+          onPress={() => {
+            if (p.player_id != null) {
+              router.push(`/players/${p.player_id}`);
+            }
+          }}
         />
       ))}
     </View>

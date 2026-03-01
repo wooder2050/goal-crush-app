@@ -67,7 +67,11 @@ export function StandingsWidget({ groups }: { groups: StandingsGroup[] }) {
             <StandingsRow
               key={s.standing_id}
               standing={s}
-              onPress={() => router.push(`/teams/${s.team?.team_id}`)}
+              onPress={() => {
+                if (s.team?.team_id != null) {
+                  router.push(`/teams/${s.team.team_id}`);
+                }
+              }}
             />
           ))}
         </View>
