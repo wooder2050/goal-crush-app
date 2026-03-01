@@ -1,6 +1,6 @@
 import { ActivityIndicator, Pressable, PressableProps, Text } from 'react-native';
 
-type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
+type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 const variantStyles: Record<ButtonVariant, { container: string; text: string }> = {
@@ -11,6 +11,7 @@ const variantStyles: Record<ButtonVariant, { container: string; text: string }> 
     text: 'text-neutral-900',
   },
   ghost: { container: 'active:bg-neutral-100', text: 'text-neutral-700' },
+  destructive: { container: 'bg-red-500 active:bg-red-600', text: 'text-white' },
 };
 
 const sizeStyles: Record<ButtonSize, { container: string; text: string }> = {
