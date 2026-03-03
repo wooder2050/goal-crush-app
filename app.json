@@ -30,6 +30,13 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
-    "plugins": ["expo-router", "expo-secure-store", "expo-image", "expo-font"]
+    "plugins": ["expo-router", "expo-secure-store", "expo-image", "expo-font"],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "57ebf4e0-7303-4bdb-8ec4-0bbbadf518b2"
+      }
+    },
+    "owner": "jaeyoungexpo"
   }
 }
