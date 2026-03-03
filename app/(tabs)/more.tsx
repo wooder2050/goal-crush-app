@@ -3,7 +3,6 @@ import {
   ChevronRight,
   Heart,
   MessageSquare,
-  Shield,
   Star,
   Trophy,
   User,
@@ -19,7 +18,6 @@ interface MenuItem {
   icon: React.ReactNode;
   href: string;
   requiresAuth?: boolean;
-  requiresAdmin?: boolean;
 }
 
 const menuItems: MenuItem[] = [
@@ -60,35 +58,24 @@ const menuItems: MenuItem[] = [
     href: '/profile',
     requiresAuth: true,
   },
-  {
-    label: '관리자',
-    icon: <Shield size={20} color="#525252" />,
-    href: '/admin',
-    requiresAdmin: true,
-  },
 ];
 
 export default function MoreScreen() {
   const router = useRouter();
-  const { user, isAdmin } = useAuth();
+  const { user } = useAuth();
 
   const handlePress = (item: MenuItem) => {
-    if ((item.requiresAuth || item.requiresAdmin) && !user) {
+    if (item.requiresAuth && !user) {
       router.push('/auth/sign-in');
       return;
     }
     router.push(item.href as never);
   };
 
-  const visibleItems = menuItems.filter((item) => {
-    if (item.requiresAdmin && !isAdmin) return false;
-    return true;
-  });
-
   return (
     <ScrollView className="flex-1 bg-white">
       <View className="py-2">
-        {visibleItems.map((item) => (
+        {menuItems.map((item) => (
           <Pressable
             key={item.href}
             className="flex-row items-center px-4 py-4 active:bg-neutral-50"
