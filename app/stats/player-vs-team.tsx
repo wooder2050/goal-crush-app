@@ -5,8 +5,8 @@ import { ChevronDown, Search, X } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import { FlatList, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
-import { getAllSeasonsPrisma } from '@/api/seasons';
 import { getPlayersPagePrisma } from '@/api/players';
+import { getAllSeasonsPrisma } from '@/api/seasons';
 import { getPlayerVsTeam } from '@/api/stats';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
@@ -70,7 +70,10 @@ function FilterSheet<T extends string | number>({
             <Pressable
               key={String(opt.value)}
               className={`rounded-xl px-4 py-3 ${selected === opt.value ? 'bg-emerald-500/10' : ''}`}
-              onPress={() => { onSelect(opt.value); onClose(); }}
+              onPress={() => {
+                onSelect(opt.value);
+                onClose();
+              }}
             >
               <Text
                 className={`text-sm ${selected === opt.value ? 'font-bold text-emerald-600' : 'text-neutral-700'}`}
@@ -99,8 +102,12 @@ function RecordRow({ record }: { record: TeamRecord }) {
         <Text className="text-[11px] text-neutral-400">{record.matches_played}경기</Text>
       </View>
       <View className="items-end">
-        <Text className="text-base font-bold text-neutral-900" style={NUM}>{record.attack_points}</Text>
-        <Text className="text-[10px] text-neutral-400">{record.goals}골 {record.assists}도움</Text>
+        <Text className="text-base font-bold text-neutral-900" style={NUM}>
+          {record.attack_points}
+        </Text>
+        <Text className="text-[10px] text-neutral-400">
+          {record.goals}골 {record.assists}도움
+        </Text>
       </View>
     </Pressable>
   );
@@ -151,12 +158,21 @@ export default function PlayerVsTeamPage() {
 
   return (
     <>
-      <Stack.Screen options={{ title: '선수 vs 팀', headerShown: true, headerShadowVisible: false, headerBackButtonDisplayMode: 'minimal' }}
+      <Stack.Screen
+        options={{
+          title: '선수 vs 팀',
+          headerShown: true,
+          headerShadowVisible: false,
+          headerBackButtonDisplayMode: 'minimal',
+        }}
       />
       <View className="flex-1 bg-neutral-50">
         {/* 검색 + 필터 */}
         <View className="bg-white px-4 pb-3 pt-2">
-          <View className="flex-row items-center rounded-xl border border-neutral-200 bg-neutral-50 px-3" style={{ height: 40 }}>
+          <View
+            className="flex-row items-center rounded-xl border border-neutral-200 bg-neutral-50 px-3"
+            style={{ height: 40 }}
+          >
             <Search size={16} color="#a3a3a3" />
             <TextInput
               className="ml-2 flex-1 text-sm text-neutral-900"
@@ -168,7 +184,14 @@ export default function PlayerVsTeamPage() {
               returnKeyType="search"
             />
             {searchName.length > 0 && (
-              <Pressable onPress={() => { setSearchName(''); setSubmittedName(''); setSelectedPlayerId(null); }} hitSlop={8}>
+              <Pressable
+                onPress={() => {
+                  setSearchName('');
+                  setSubmittedName('');
+                  setSelectedPlayerId(null);
+                }}
+                hitSlop={8}
+              >
                 <X size={16} color="#a3a3a3" />
               </Pressable>
             )}

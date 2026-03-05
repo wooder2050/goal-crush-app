@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { ChevronRight } from 'lucide-react-native';
 import { useMemo } from 'react';
-import { RefreshControl, ScrollView, Text, View, Pressable } from 'react-native';
+import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 
 import { getPlayerByIdPrisma, getPlayerSummaryPrisma } from '@/api/players';
 import { ErrorState } from '@/components/ErrorState';
@@ -28,7 +28,8 @@ function PositionBadge({ position, count }: { position: string; count?: number }
   return (
     <View className={`rounded-full px-2.5 py-1 ${colors.bg}`}>
       <Text className={`text-[11px] font-bold ${colors.text}`}>
-        {position}{count != null ? ` (${count})` : ''}
+        {position}
+        {count != null ? ` (${count})` : ''}
       </Text>
     </View>
   );
@@ -37,10 +38,12 @@ function PositionBadge({ position, count }: { position: string; count?: number }
 /* ── 시즌명에서 "골때리는 그녀들" 제거 ── */
 function shortenSeasonName(name: string | null): string {
   if (!name) return '-';
-  return name
-    .replace(/골\s*때리는\s*그녀들\s*/g, '')
-    .replace(/^\s+/, '')
-    .trim() || name;
+  return (
+    name
+      .replace(/골\s*때리는\s*그녀들\s*/g, '')
+      .replace(/^\s+/, '')
+      .trim() || name
+  );
 }
 
 /* ── 통계 박스 ── */
@@ -83,7 +86,8 @@ function getMatchOutcome(gm: {
   is_home: boolean;
 }): { label: string; color: string } {
   const { home_score, away_score, penalty_home_score, penalty_away_score, is_home } = gm;
-  if (home_score == null || away_score == null) return { label: '-', color: 'bg-neutral-100 text-neutral-500' };
+  if (home_score == null || away_score == null)
+    return { label: '-', color: 'bg-neutral-100 text-neutral-500' };
 
   const myScore = is_home ? home_score : away_score;
   const opScore = is_home ? away_score : home_score;
@@ -126,7 +130,17 @@ export default function PlayerDetailScreen() {
   /* ── 같은 팀 레코드 병합 (웹 버전과 동일) ── */
   const mergedTeamHistory = useMemo(() => {
     const raw = summary?.team_history ?? [];
-    const map = new Map<string, { team_id: number | null; team_name: string | null; logo: string | null; start_date: string | null; end_date: string | null; is_active: boolean }>();
+    const map = new Map<
+      string,
+      {
+        team_id: number | null;
+        team_name: string | null;
+        logo: string | null;
+        start_date: string | null;
+        end_date: string | null;
+        is_active: boolean;
+      }
+    >();
 
     raw.forEach((t) => {
       const key = (t.team_name ?? '-').trim();
@@ -196,7 +210,9 @@ export default function PlayerDetailScreen() {
               />
             ) : (
               <View className="h-24 w-24 items-center justify-center rounded-full bg-neutral-100">
-                <Text className="text-3xl font-bold text-neutral-300">{player.name?.charAt(0)}</Text>
+                <Text className="text-3xl font-bold text-neutral-300">
+                  {player.name?.charAt(0)}
+                </Text>
               </View>
             )}
             {/* 팀 로고 오버레이 - FotMob 스타일 */}
@@ -260,7 +276,11 @@ export default function PlayerDetailScreen() {
                 {isGK && (
                   <>
                     <View className="w-px bg-neutral-100" />
-                    <StatBox label="실점" value={summary.totals.goals_conceded} color="text-red-400" />
+                    <StatBox
+                      label="실점"
+                      value={summary.totals.goals_conceded}
+                      color="text-red-400"
+                    />
                   </>
                 )}
               </View>
@@ -268,57 +288,68 @@ export default function PlayerDetailScreen() {
           )}
 
           {/* ── 소속팀 이력 ── */}
-          {mergedTeamHistory.length > 0 && (() => {
-            if (mergedTeamHistory.length === 1) {
-              const th0 = mergedTeamHistory[0];
+          {mergedTeamHistory.length > 0 &&
+            (() => {
+              if (mergedTeamHistory.length === 1) {
+                const th0 = mergedTeamHistory[0];
+                return (
+                  <Pressable
+                    className="flex-row items-center rounded-2xl border border-neutral-100 bg-white px-4 py-3.5 active:bg-neutral-50"
+                    onPress={() => {
+                      if (th0.team_id != null) router.push(`/teams/${th0.team_id}`);
+                    }}
+                  >
+                    <Text className="text-[13px] font-medium text-neutral-400">소속팀</Text>
+                    <View className="ml-auto flex-row items-center" style={{ gap: 8 }}>
+                      <TeamLogo uri={th0.logo} size={24} teamName={th0.team_name ?? ''} />
+                      <Text className="text-[13px] font-semibold text-neutral-800">
+                        {th0.team_name}
+                      </Text>
+                      <ChevronRight size={14} color="#d4d4d4" />
+                    </View>
+                  </Pressable>
+                );
+              }
+
               return (
-                <Pressable
-                  className="flex-row items-center rounded-2xl border border-neutral-100 bg-white px-4 py-3.5 active:bg-neutral-50"
-                  onPress={() => { if (th0.team_id != null) router.push(`/teams/${th0.team_id}`); }}
-                >
-                  <Text className="text-[13px] font-medium text-neutral-400">소속팀</Text>
-                  <View className="ml-auto flex-row items-center" style={{ gap: 8 }}>
-                    <TeamLogo uri={th0.logo} size={24} teamName={th0.team_name ?? ''} />
-                    <Text className="text-[13px] font-semibold text-neutral-800">{th0.team_name}</Text>
-                    <ChevronRight size={14} color="#d4d4d4" />
-                  </View>
-                </Pressable>
+                <Card className="p-5">
+                  <SectionHeader title="소속팀 이력" />
+                  {mergedTeamHistory.map((th, i) => {
+                    const startStr = th.start_date
+                      ? format(new Date(th.start_date), 'yyyy.MM')
+                      : null;
+                    const endStr = th.is_active
+                      ? '현재'
+                      : th.end_date
+                        ? format(new Date(th.end_date), 'yyyy.MM')
+                        : null;
+                    const dateRange = startStr ? `${startStr} ~ ${endStr ?? ''}` : null;
+
+                    return (
+                      <Pressable
+                        key={i}
+                        className={`flex-row items-center py-3.5 active:bg-neutral-50 ${i < mergedTeamHistory.length - 1 ? 'border-b border-neutral-100' : ''}`}
+                        onPress={() => {
+                          if (th.team_id != null) router.push(`/teams/${th.team_id}`);
+                        }}
+                      >
+                        <TeamLogo uri={th.logo} size={36} teamName={th.team_name ?? ''} />
+                        <View className="ml-3 flex-1">
+                          <Text className="text-sm font-semibold text-neutral-800">
+                            {th.team_name}
+                          </Text>
+                          {dateRange && (
+                            <Text className="mt-0.5 text-[11px] text-neutral-400">{dateRange}</Text>
+                          )}
+                        </View>
+                        {th.is_active && <Badge variant="success">현재</Badge>}
+                        <ChevronRight size={14} color="#d4d4d4" style={{ marginLeft: 4 }} />
+                      </Pressable>
+                    );
+                  })}
+                </Card>
               );
-            }
-
-            return (
-              <Card className="p-5">
-                <SectionHeader title="소속팀 이력" />
-                {mergedTeamHistory.map((th, i) => {
-                  const startStr = th.start_date ? format(new Date(th.start_date), 'yyyy.MM') : null;
-                  const endStr = th.is_active ? '현재' : th.end_date ? format(new Date(th.end_date), 'yyyy.MM') : null;
-                  const dateRange = startStr ? `${startStr} ~ ${endStr ?? ''}` : null;
-
-                  return (
-                    <Pressable
-                      key={i}
-                      className={`flex-row items-center py-3.5 active:bg-neutral-50 ${i < mergedTeamHistory.length - 1 ? 'border-b border-neutral-100' : ''}`}
-                      onPress={() => {
-                        if (th.team_id != null) router.push(`/teams/${th.team_id}`);
-                      }}
-                    >
-                      <TeamLogo uri={th.logo} size={36} teamName={th.team_name ?? ''} />
-                      <View className="ml-3 flex-1">
-                        <Text className="text-sm font-semibold text-neutral-800">
-                          {th.team_name}
-                        </Text>
-                        {dateRange && (
-                          <Text className="mt-0.5 text-[11px] text-neutral-400">{dateRange}</Text>
-                        )}
-                      </View>
-                      {th.is_active && <Badge variant="success">현재</Badge>}
-                      <ChevronRight size={14} color="#d4d4d4" style={{ marginLeft: 4 }} />
-                    </Pressable>
-                  );
-                })}
-              </Card>
-            );
-          })()}
+            })()}
 
           {/* ── 시즌별 기록 ── */}
           {summary?.seasons && summary.seasons.length > 0 && (
@@ -328,9 +359,15 @@ export default function PlayerDetailScreen() {
               <View className="mb-1 flex-row items-center pb-1.5">
                 <View className="flex-1" />
                 <View className="flex-row items-center" style={{ gap: 10 }}>
-                  <Text className="w-7 text-center text-[10px] font-medium text-neutral-400">출전</Text>
-                  <Text className="w-7 text-center text-[10px] font-medium text-neutral-400">골</Text>
-                  <Text className="w-7 text-center text-[10px] font-medium text-neutral-400">도움</Text>
+                  <Text className="w-7 text-center text-[10px] font-medium text-neutral-400">
+                    출전
+                  </Text>
+                  <Text className="w-7 text-center text-[10px] font-medium text-neutral-400">
+                    골
+                  </Text>
+                  <Text className="w-7 text-center text-[10px] font-medium text-neutral-400">
+                    도움
+                  </Text>
                 </View>
               </View>
               {[...summary.seasons].reverse().map((s, i) => (
@@ -362,13 +399,22 @@ export default function PlayerDetailScreen() {
 
                   {/* 스탯 */}
                   <View className="flex-row items-center" style={{ gap: 10 }}>
-                    <Text className="w-7 text-center text-[13px] font-bold text-neutral-800" style={NUM}>
+                    <Text
+                      className="w-7 text-center text-[13px] font-bold text-neutral-800"
+                      style={NUM}
+                    >
                       {s.appearances}
                     </Text>
-                    <Text className="w-7 text-center text-[13px] font-bold text-primary" style={NUM}>
+                    <Text
+                      className="w-7 text-center text-[13px] font-bold text-primary"
+                      style={NUM}
+                    >
                       {s.goals}
                     </Text>
-                    <Text className="w-7 text-center text-[13px] font-bold text-neutral-800" style={NUM}>
+                    <Text
+                      className="w-7 text-center text-[13px] font-bold text-neutral-800"
+                      style={NUM}
+                    >
                       {s.assists}
                     </Text>
                   </View>
@@ -390,9 +436,12 @@ export default function PlayerDetailScreen() {
               />
               {summary.goal_matches.map((gm, i) => {
                 const outcome = getMatchOutcome(gm);
-                const scoreText = gm.home_score != null && gm.away_score != null
-                  ? (gm.is_home ? `${gm.home_score} - ${gm.away_score}` : `${gm.away_score} - ${gm.home_score}`)
-                  : '-';
+                const scoreText =
+                  gm.home_score != null && gm.away_score != null
+                    ? gm.is_home
+                      ? `${gm.home_score} - ${gm.away_score}`
+                      : `${gm.away_score} - ${gm.home_score}`
+                    : '-';
                 const hasPK = gm.penalty_home_score != null && gm.penalty_away_score != null;
 
                 return (
@@ -422,8 +471,15 @@ export default function PlayerDetailScreen() {
                     {/* 하단: 상대팀 + 스코어 + 골수 */}
                     <View className="mt-2 flex-row items-center">
                       <Text className="mr-1.5 text-[11px] text-neutral-400">vs</Text>
-                      <TeamLogo uri={gm.opponent_logo} size={22} teamName={gm.opponent_name ?? ''} />
-                      <Text className="ml-2 flex-1 text-[13px] font-medium text-neutral-700" numberOfLines={1}>
+                      <TeamLogo
+                        uri={gm.opponent_logo}
+                        size={22}
+                        teamName={gm.opponent_name ?? ''}
+                      />
+                      <Text
+                        className="ml-2 flex-1 text-[13px] font-medium text-neutral-700"
+                        numberOfLines={1}
+                      >
                         {gm.opponent_name}
                       </Text>
 
@@ -434,7 +490,8 @@ export default function PlayerDetailScreen() {
                         </Text>
                         {hasPK && (
                           <Text className="text-[10px] text-neutral-400" style={NUM}>
-                            PK {gm.is_home
+                            PK{' '}
+                            {gm.is_home
                               ? `${gm.penalty_home_score}-${gm.penalty_away_score}`
                               : `${gm.penalty_away_score}-${gm.penalty_home_score}`}
                           </Text>

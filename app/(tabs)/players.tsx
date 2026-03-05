@@ -23,11 +23,29 @@ const POSITIONS = [
   { key: 'GK', label: '골키퍼' },
 ];
 
-const POSITION_COLORS: Record<string, { bg: string; text: string; activeBg: string; activeText: string }> = {
+const POSITION_COLORS: Record<
+  string,
+  { bg: string; text: string; activeBg: string; activeText: string }
+> = {
   FW: { bg: 'bg-red-50', text: 'text-red-600', activeBg: 'bg-red-500', activeText: 'text-white' },
-  MF: { bg: 'bg-green-50', text: 'text-green-600', activeBg: 'bg-green-500', activeText: 'text-white' },
-  DF: { bg: 'bg-blue-50', text: 'text-blue-600', activeBg: 'bg-blue-500', activeText: 'text-white' },
-  GK: { bg: 'bg-yellow-50', text: 'text-yellow-700', activeBg: 'bg-yellow-500', activeText: 'text-white' },
+  MF: {
+    bg: 'bg-green-50',
+    text: 'text-green-600',
+    activeBg: 'bg-green-500',
+    activeText: 'text-white',
+  },
+  DF: {
+    bg: 'bg-blue-50',
+    text: 'text-blue-600',
+    activeBg: 'bg-blue-500',
+    activeText: 'text-white',
+  },
+  GK: {
+    bg: 'bg-yellow-50',
+    text: 'text-yellow-700',
+    activeBg: 'bg-yellow-500',
+    activeText: 'text-white',
+  },
 };
 
 /* ── 필터 바텀시트 ── */
@@ -60,9 +78,14 @@ function FilterSheet<T extends { id: number | string; label: string; logo?: stri
           {/* 전체 옵션 */}
           <Pressable
             className={`flex-row items-center px-5 py-3 ${selected == null ? 'bg-primary/5' : ''}`}
-            onPress={() => { onSelect(null); onClose(); }}
+            onPress={() => {
+              onSelect(null);
+              onClose();
+            }}
           >
-            <Text className={`text-sm font-medium ${selected == null ? 'text-primary font-bold' : 'text-neutral-700'}`}>
+            <Text
+              className={`text-sm font-medium ${selected == null ? 'text-primary font-bold' : 'text-neutral-700'}`}
+            >
               전체
             </Text>
           </Pressable>
@@ -72,7 +95,10 @@ function FilterSheet<T extends { id: number | string; label: string; logo?: stri
               <Pressable
                 key={item.id}
                 className={`flex-row items-center px-5 py-3 ${isActive ? 'bg-primary/5' : ''}`}
-                onPress={() => { onSelect(item.id); onClose(); }}
+                onPress={() => {
+                  onSelect(item.id);
+                  onClose();
+                }}
               >
                 {item.logo !== undefined && (
                   <TeamLogo uri={item.logo} size={24} teamName={item.label} />
@@ -136,13 +162,19 @@ function PositionBadge({ position }: { position: string | null }) {
 function StatItem({ label, value }: { label: string; value: number }) {
   return (
     <View className="items-center">
-      <Text className="text-[13px] font-bold text-neutral-800" style={NUM}>{value}</Text>
+      <Text className="text-[13px] font-bold text-neutral-800" style={NUM}>
+        {value}
+      </Text>
       <Text className="mt-0.5 text-[10px] font-medium text-neutral-400">{label}</Text>
     </View>
   );
 }
 
-function SeasonBadges({ seasons }: { seasons: Array<{ season_name: string | null; year: number | null }> }) {
+function SeasonBadges({
+  seasons,
+}: {
+  seasons: Array<{ season_name: string | null; year: number | null }>;
+}) {
   if (!seasons || seasons.length === 0) return null;
 
   const maxShow = 3;
@@ -225,7 +257,6 @@ function PlayerCard({ player }: { player: PlayersPageItem }) {
 
 /* ── 메인 화면 ── */
 export default function PlayersScreen() {
-  const router = useRouter();
   const [position, setPosition] = useState('');
   const [searchName, setSearchName] = useState('');
   const [submittedName, setSubmittedName] = useState('');
@@ -283,7 +314,8 @@ export default function PlayersScreen() {
   const players = data?.pages.flatMap((p) => p.items) ?? [];
   const totalCount = data?.pages[0]?.totalCount ?? 0;
 
-  const hasFilters = !!position || !!submittedName || selectedTeamId != null || selectedSeasonId != null;
+  const hasFilters =
+    !!position || !!submittedName || selectedTeamId != null || selectedSeasonId != null;
 
   const clearAllFilters = useCallback(() => {
     setPosition('');
@@ -370,9 +402,7 @@ export default function PlayersScreen() {
             totalCount > 0 ? (
               <View className="mb-2 flex-row items-center px-4">
                 <View className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
-                <Text className="text-xs font-semibold text-neutral-500">
-                  총 {totalCount}명
-                </Text>
+                <Text className="text-xs font-semibold text-neutral-500">총 {totalCount}명</Text>
               </View>
             ) : null
           }

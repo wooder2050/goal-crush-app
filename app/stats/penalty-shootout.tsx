@@ -29,7 +29,7 @@ const GK_SORT_OPTIONS = [
 ] as const;
 
 /* ── 최소 횟수 ── */
-const MIN_ATTEMPTS_OPTIONS = [1, 3, 5, 10] as const;
+const _MIN_ATTEMPTS_OPTIONS = [1, 3, 5, 10] as const;
 
 /* ── 순위 뱃지 ── */
 function RankBadge({ rank }: { rank: number }) {
@@ -96,7 +96,10 @@ function FilterSheet<T extends string | number>({
             <Pressable
               key={String(opt.value)}
               className={`rounded-xl px-4 py-3 ${selected === opt.value ? 'bg-teal-500/10' : ''}`}
-              onPress={() => { onSelect(opt.value); onClose(); }}
+              onPress={() => {
+                onSelect(opt.value);
+                onClose();
+              }}
             >
               <Text
                 className={`text-sm ${selected === opt.value ? 'font-bold text-teal-600' : 'text-neutral-700'}`}
@@ -166,7 +169,9 @@ function KickerRow({ player }: { player: KickerRanking }) {
         <Text className="text-xs text-neutral-500">{player.first_team_name}</Text>
       </View>
       <View className="items-end">
-        <Text className="text-base font-bold text-emerald-600" style={NUM}>{player.success_rate}%</Text>
+        <Text className="text-base font-bold text-emerald-600" style={NUM}>
+          {player.success_rate}%
+        </Text>
         <Text className="text-[10px] text-neutral-400">
           {player.successful_kicks}/{player.total_kicks} 성공
         </Text>
@@ -230,7 +235,9 @@ function GKPKRow({ player }: { player: GoalkeeperPKRanking }) {
         <Text className="text-xs text-neutral-500">{player.first_team_name}</Text>
       </View>
       <View className="items-end">
-        <Text className="text-base font-bold text-blue-600" style={NUM}>{player.save_rate}%</Text>
+        <Text className="text-base font-bold text-blue-600" style={NUM}>
+          {player.save_rate}%
+        </Text>
         <Text className="text-[10px] text-neutral-400">
           {player.saves}/{player.total_faced} 선방
         </Text>
@@ -280,7 +287,13 @@ export default function PenaltyShootoutPage() {
 
   return (
     <>
-      <Stack.Screen options={{ title: '승부차기', headerShown: true, headerShadowVisible: false, headerBackButtonDisplayMode: 'minimal' }}
+      <Stack.Screen
+        options={{
+          title: '승부차기',
+          headerShown: true,
+          headerShadowVisible: false,
+          headerBackButtonDisplayMode: 'minimal',
+        }}
       />
       <View className="flex-1 bg-neutral-50">
         {/* 타입 토글 + 필터 */}
@@ -290,18 +303,42 @@ export default function PenaltyShootoutPage() {
             <Pressable
               className={`flex-1 items-center rounded-lg py-2 ${type === 'kicker' ? 'bg-white' : ''}`}
               onPress={() => setType('kicker')}
-              style={type === 'kicker' ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 2, elevation: 1 } : undefined}
+              style={
+                type === 'kicker'
+                  ? {
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 1 },
+                      shadowOpacity: 0.06,
+                      shadowRadius: 2,
+                      elevation: 1,
+                    }
+                  : undefined
+              }
             >
-              <Text className={`text-sm font-semibold ${type === 'kicker' ? 'text-neutral-900' : 'text-neutral-400'}`}>
+              <Text
+                className={`text-sm font-semibold ${type === 'kicker' ? 'text-neutral-900' : 'text-neutral-400'}`}
+              >
                 키커
               </Text>
             </Pressable>
             <Pressable
               className={`flex-1 items-center rounded-lg py-2 ${type === 'goalkeeper' ? 'bg-white' : ''}`}
               onPress={() => setType('goalkeeper')}
-              style={type === 'goalkeeper' ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 2, elevation: 1 } : undefined}
+              style={
+                type === 'goalkeeper'
+                  ? {
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 1 },
+                      shadowOpacity: 0.06,
+                      shadowRadius: 2,
+                      elevation: 1,
+                    }
+                  : undefined
+              }
             >
-              <Text className={`text-sm font-semibold ${type === 'goalkeeper' ? 'text-neutral-900' : 'text-neutral-400'}`}>
+              <Text
+                className={`text-sm font-semibold ${type === 'goalkeeper' ? 'text-neutral-900' : 'text-neutral-400'}`}
+              >
                 골키퍼
               </Text>
             </Pressable>
@@ -364,7 +401,13 @@ export default function PenaltyShootoutPage() {
         title="정렬 기준"
         options={sortOptions.map((o) => ({ value: o.value, label: o.label }))}
         selected={currentSort}
-        onSelect={(v) => { type === 'kicker' ? setKickerSort(v) : setGkSort(v); }}
+        onSelect={(v) => {
+          if (type === 'kicker') {
+            setKickerSort(v);
+          } else {
+            setGkSort(v);
+          }
+        }}
       />
     </>
   );
