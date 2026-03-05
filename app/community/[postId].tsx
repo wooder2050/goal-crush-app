@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Stack, useLocalSearchParams } from 'expo-router';
+import { Eye, Heart, MessageCircle, Send } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import {
   Alert,
@@ -17,18 +18,19 @@ import {
 import { addComment, getPostById, likePost, PostComment } from '@/api/community';
 import { ErrorState } from '@/components/ErrorState';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 
 function CommentItem({ comment }: { comment: PostComment }) {
   return (
-    <View className="border-b border-neutral-100 py-3">
+    <View className="py-3.5">
       <View className="flex-row items-center justify-between">
-        <Text className="text-sm font-semibold text-neutral-900">{comment.user_nickname}</Text>
-        <Text className="text-xs text-neutral-400">
+        <Text className="text-sm font-bold text-neutral-800">{comment.user_nickname}</Text>
+        <Text className="text-[11px] text-neutral-400">
           {format(new Date(comment.created_at), 'MM/dd HH:mm')}
         </Text>
       </View>
-      <Text className="mt-1 text-sm text-neutral-700">{comment.content}</Text>
+      <Text className="mt-1.5 text-sm leading-5 text-neutral-600">{comment.content}</Text>
     </View>
   );
 }
@@ -74,7 +76,14 @@ export default function PostDetailScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: '게시글', headerShown: true }} />
+      <Stack.Screen
+        options={{
+          title: '게시글',
+          headerShown: true,
+          headerStyle: { backgroundColor: '#fff' },
+          headerShadowVisible: false,
+        }}
+      />
       <KeyboardAvoidingView
         className="flex-1 bg-neutral-50"
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -82,61 +91,90 @@ export default function PostDetailScreen() {
       >
         <ScrollView
           className="flex-1"
-          refreshControl={<RefreshControl refreshing={false} onRefresh={() => refetch()} />}
+          refreshControl={
+            <RefreshControl refreshing={false} onRefresh={() => refetch()} tintColor="#ff4800" />
+          }
+          showsVerticalScrollIndicator={false}
         >
-          <Card className="mx-4 mt-4">
-            <Text className="text-lg font-bold text-neutral-900">{post.title}</Text>
-            <View className="mt-2 flex-row items-center justify-between">
-              <Text className="text-xs text-neutral-500">
+          <Card className="mx-5 mt-4 p-5">
+            <Text className="text-lg font-bold leading-6 text-neutral-900">{post.title}</Text>
+            <View className="mt-3 flex-row items-center justify-between">
+              <Text className="text-xs text-neutral-400">
                 {post.user_nickname} · {format(new Date(post.created_at), 'yyyy.MM.dd HH:mm')}
               </Text>
-              {post.category && <Text className="text-xs text-primary">{post.category}</Text>}
+              {post.category && <Badge variant="primary">{post.category}</Badge>}
             </View>
             {post.content && (
-              <Text className="mt-4 text-sm leading-6 text-neutral-700">{post.content}</Text>
+              <Text className="mt-5 text-sm leading-6 text-neutral-600">{post.content}</Text>
             )}
-            <View className="mt-4 flex-row items-center gap-4 border-t border-neutral-100 pt-3">
-              <Pressable className="flex-row items-center" onPress={() => likeMutation.mutate()}>
-                <Text className="text-sm text-neutral-500">
-                  ♥ {post.likes_count} {post.is_liked ? '(좋아요 취소)' : '좋아요'}
+            <View className="mt-5 flex-row items-center gap-5 border-t border-neutral-100 pt-3.5">
+              <Pressable
+                className="flex-row items-center gap-1.5"
+                onPress={() => likeMutation.mutate()}
+              >
+                <Heart
+                  size={16}
+                  color={post.is_liked ? '#ff4800' : '#a3a3a3'}
+                  fill={post.is_liked ? '#ff4800' : 'transparent'}
+                />
+                <Text
+                  className={`text-sm tabular-nums ${post.is_liked ? 'font-semibold text-primary' : 'text-neutral-500'}`}
+                >
+                  {post.likes_count}
                 </Text>
               </Pressable>
-              <Text className="text-sm text-neutral-400">💬 {post.comments_count}</Text>
+              <View className="flex-row items-center gap-1.5">
+                <MessageCircle size={16} color="#a3a3a3" />
+                <Text className="text-sm tabular-nums text-neutral-500">{post.comments_count}</Text>
+              </View>
               {post.views_count != null && (
-                <Text className="text-sm text-neutral-400">👁 {post.views_count}</Text>
+                <View className="flex-row items-center gap-1.5">
+                  <Eye size={16} color="#a3a3a3" />
+                  <Text className="text-sm tabular-nums text-neutral-500">{post.views_count}</Text>
+                </View>
               )}
             </View>
           </Card>
 
-          <View className="px-4 py-4">
-            <Text className="mb-2 text-sm font-semibold text-neutral-900">
+          <View className="px-5 pb-4 pt-5">
+            <Text className="mb-3 text-sm font-bold text-neutral-800">
               댓글 {post.comments?.length ?? 0}
             </Text>
             {post.comments && post.comments.length > 0 ? (
-              post.comments.map((c) => <CommentItem key={c.id} comment={c} />)
+              <View className="rounded-2xl border border-neutral-100 bg-white px-4">
+                {post.comments.map((c, i) => (
+                  <View
+                    key={c.id}
+                    className={i < post.comments!.length - 1 ? 'border-b border-neutral-100' : ''}
+                  >
+                    <CommentItem comment={c} />
+                  </View>
+                ))}
+              </View>
             ) : (
-              <Text className="py-4 text-center text-sm text-neutral-400">
+              <Text className="py-8 text-center text-sm text-neutral-400">
                 아직 댓글이 없습니다.
               </Text>
             )}
           </View>
         </ScrollView>
 
-        <View className="flex-row items-center border-t border-neutral-200 bg-white px-4 py-2">
+        <View className="flex-row items-center border-t border-neutral-100 bg-white px-5 py-2.5">
           <TextInput
-            className="mr-2 h-9 flex-1 rounded-lg border border-neutral-200 px-3 text-sm"
+            className="mr-2.5 h-10 flex-1 rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 text-sm"
             placeholder="댓글을 입력하세요"
+            placeholderTextColor="#b5b5b5"
             value={commentText}
             onChangeText={setCommentText}
             returnKeyType="send"
             onSubmitEditing={handleSubmitComment}
           />
           <Pressable
-            className="rounded-lg bg-primary px-4 py-2"
+            className="h-10 w-10 items-center justify-center rounded-xl bg-primary active:bg-primary-dark"
             onPress={handleSubmitComment}
             disabled={commentMutation.isPending}
           >
-            <Text className="text-sm font-semibold text-white">등록</Text>
+            <Send size={16} color="#fff" />
           </Pressable>
         </View>
       </KeyboardAvoidingView>

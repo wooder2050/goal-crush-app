@@ -275,6 +275,7 @@ export interface PlayerSeasonStats {
 
 export interface PlayerSeasonStatsWithNames extends PlayerSeasonStats {
   player_name: string | null;
+  player_image?: string | null;
   team_name: string | null;
   team_logo?: string | null;
 }
