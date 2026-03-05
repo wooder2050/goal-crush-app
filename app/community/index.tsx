@@ -1,10 +1,12 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Stack, useRouter } from 'expo-router';
+import { Heart, MessageCircle, Plus } from 'lucide-react-native';
 import { useState } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 
 import { getCommunityPosts } from '@/api/community';
+import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { PressableCard } from '@/components/ui/Card';
@@ -19,25 +21,52 @@ const SORT_OPTIONS = [
 function PostCard({ post }: { post: CommunityPost }) {
   const router = useRouter();
   return (
-    <PressableCard className="mx-4 mb-2" onPress={() => router.push(`/community/${post.id}`)}>
-      <Text className="text-base font-semibold text-neutral-900" numberOfLines={2}>
+    <PressableCard className="mx-5 mb-2.5" onPress={() => router.push(`/community/${post.id}`)}>
+      <Text className="text-[15px] font-semibold leading-5 text-neutral-900" numberOfLines={2}>
         {post.title}
       </Text>
       {post.content && (
-        <Text className="mt-1 text-sm text-neutral-500" numberOfLines={2}>
+        <Text className="mt-1.5 text-sm leading-5 text-neutral-400" numberOfLines={2}>
           {post.content}
         </Text>
       )}
-      <View className="mt-2 flex-row items-center justify-between">
+      <View className="mt-3 flex-row items-center justify-between">
         <Text className="text-xs text-neutral-400">
           {post.user_nickname} · {format(new Date(post.created_at), 'MM/dd HH:mm')}
         </Text>
-        <View className="flex-row gap-2">
-          <Text className="text-xs text-neutral-400">♥ {post.likes_count}</Text>
-          <Text className="text-xs text-neutral-400">💬 {post.comments_count}</Text>
+        <View className="flex-row items-center gap-3">
+          <View className="flex-row items-center gap-1">
+            <Heart size={12} color="#d4d4d4" />
+            <Text className="text-xs tabular-nums text-neutral-400">{post.likes_count}</Text>
+          </View>
+          <View className="flex-row items-center gap-1">
+            <MessageCircle size={12} color="#d4d4d4" />
+            <Text className="text-xs tabular-nums text-neutral-400">{post.comments_count}</Text>
+          </View>
         </View>
       </View>
     </PressableCard>
+  );
+}
+
+function FilterPill({
+  label,
+  selected,
+  onPress,
+}: {
+  label: string;
+  selected: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      className={`rounded-full px-4 py-1.5 ${selected ? 'bg-primary' : 'bg-neutral-100'}`}
+      onPress={onPress}
+    >
+      <Text className={`text-xs font-semibold ${selected ? 'text-white' : 'text-neutral-500'}`}>
+        {label}
+      </Text>
+    </Pressable>
   );
 }
 
@@ -72,53 +101,40 @@ export default function CommunityScreen() {
         options={{
           title: '커뮤니티',
           headerShown: true,
+          headerStyle: { backgroundColor: '#fff' },
+          headerShadowVisible: false,
           headerRight: () => (
-            <Pressable className="mr-4" onPress={() => router.push('/community/create-post')}>
-              <Text className="text-sm font-semibold text-primary">글쓰기</Text>
+            <Pressable
+              className="mr-1 flex-row items-center rounded-full bg-primary px-3 py-1.5"
+              onPress={() => router.push('/community/create-post')}
+            >
+              <Plus size={14} color="#fff" strokeWidth={3} />
+              <Text className="ml-1 text-xs font-bold text-white">글쓰기</Text>
             </Pressable>
           ),
         }}
       />
       <View className="flex-1 bg-neutral-50">
-        <View className="border-b border-neutral-200 bg-white px-4 py-2">
-          <View className="mb-2 flex-row gap-1">
+        <View className="border-b border-neutral-100 bg-white px-5 pb-3 pt-2">
+          <View className="mb-2.5 flex-row gap-2">
             {SORT_OPTIONS.map((opt) => (
-              <Pressable
+              <FilterPill
                 key={opt.key}
-                className={`rounded-full px-3 py-1 ${sortBy === opt.key ? 'bg-primary' : 'bg-neutral-100'}`}
+                label={opt.label}
+                selected={sortBy === opt.key}
                 onPress={() => setSortBy(opt.key)}
-              >
-                <Text
-                  className={`text-xs font-medium ${sortBy === opt.key ? 'text-white' : 'text-neutral-600'}`}
-                >
-                  {opt.label}
-                </Text>
-              </Pressable>
+              />
             ))}
           </View>
-          <View className="flex-row gap-1">
-            <Pressable
-              className={`rounded-full px-3 py-1 ${category === '' ? 'bg-primary' : 'bg-neutral-100'}`}
-              onPress={() => setCategory('')}
-            >
-              <Text
-                className={`text-xs font-medium ${category === '' ? 'text-white' : 'text-neutral-600'}`}
-              >
-                전체
-              </Text>
-            </Pressable>
+          <View className="flex-row gap-2">
+            <FilterPill label="전체" selected={category === ''} onPress={() => setCategory('')} />
             {POST_CATEGORIES.map((c) => (
-              <Pressable
+              <FilterPill
                 key={c.value}
-                className={`rounded-full px-3 py-1 ${category === c.value ? 'bg-primary' : 'bg-neutral-100'}`}
+                label={c.label}
+                selected={category === c.value}
                 onPress={() => setCategory(c.value)}
-              >
-                <Text
-                  className={`text-xs font-medium ${category === c.value ? 'text-white' : 'text-neutral-600'}`}
-                >
-                  {c.label}
-                </Text>
-              </Pressable>
+              />
             ))}
           </View>
         </View>
@@ -127,14 +143,13 @@ export default function CommunityScreen() {
           data={posts}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <PostCard post={item} />}
-          contentContainerStyle={{ paddingTop: 12, paddingBottom: 24 }}
+          contentContainerStyle={{ paddingTop: 16, paddingBottom: 32 }}
           onEndReached={() => hasNextPage && fetchNextPage()}
           onEndReachedThreshold={0.5}
+          showsVerticalScrollIndicator={false}
           ListFooterComponent={isFetchingNextPage ? <LoadingSpinner size="small" /> : null}
           ListEmptyComponent={
-            <View className="items-center py-16">
-              <Text className="text-sm text-neutral-500">게시글이 없습니다.</Text>
-            </View>
+            <EmptyState title="게시글이 없습니다" description="첫 번째 글을 작성해보세요!" />
           }
         />
       </View>

@@ -9,13 +9,15 @@ type TeamLogoProps = {
 };
 
 export function TeamLogo({ uri, size = 32, teamName, className }: TeamLogoProps) {
+  const fontSize = Math.max(size * 0.35, 10);
+
   if (!uri) {
     return (
       <View
-        className={`items-center justify-center rounded-full bg-neutral-200 ${className ?? ''}`}
+        className={`items-center justify-center rounded-full bg-neutral-100 ${className ?? ''}`}
         style={{ width: size, height: size }}
       >
-        <Text className="text-xs font-bold text-neutral-500">
+        <Text style={{ fontSize }} className="font-bold text-neutral-400">
           {teamName ? teamName.charAt(0) : '?'}
         </Text>
       </View>
@@ -25,9 +27,10 @@ export function TeamLogo({ uri, size = 32, teamName, className }: TeamLogoProps)
   return (
     <Image
       source={{ uri }}
-      style={{ width: size, height: size }}
-      className={`rounded-full ${className ?? ''}`}
-      contentFit="contain"
+      style={{ width: size, height: size, borderRadius: size / 2 }}
+      className={className ?? ''}
+      contentFit="cover"
+      transition={200}
     />
   );
 }

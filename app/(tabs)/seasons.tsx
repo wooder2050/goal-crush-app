@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
+import { ArrowUp, ChevronRight, Medal } from 'lucide-react-native';
 import { FlatList, Text, View } from 'react-native';
 
 import { getSeasonsPagePrisma, SeasonWithStats } from '@/api/seasons';
@@ -9,54 +10,90 @@ import { TeamLogo } from '@/components/TeamLogo';
 import { Badge } from '@/components/ui/Badge';
 import { PressableCard } from '@/components/ui/Card';
 
-const statusBadge = (status?: string) => {
-  switch (status) {
-    case 'ongoing':
-      return <Badge variant="success">진행중</Badge>;
-    case 'completed':
-      return <Badge variant="default">완료</Badge>;
-    case 'upcoming':
-      return <Badge variant="warning">예정</Badge>;
-    default:
-      return <Badge variant="outline">미정</Badge>;
+function getSeasonStatus(season: SeasonWithStats): {
+  label: string;
+  variant: 'success' | 'default' | 'warning';
+} {
+  if (season.end_date) {
+    return { label: '완료', variant: 'default' };
   }
-};
+  if (season.start_date || (season.match_count ?? 0) > 0) {
+    return { label: '진행중', variant: 'success' };
+  }
+  return { label: '예정', variant: 'warning' };
+}
+
+function ChampionSection({ season }: { season: SeasonWithStats }) {
+  const label = season.champion_label;
+  if (!label) return null;
+
+  const teams = season.champion_teams ?? [];
+  const displayTeams =
+    teams.length > 0
+      ? teams
+      : season.champion_team_name
+        ? [
+            {
+              team_id: season.champion_team_id ?? null,
+              team_name: season.champion_team_name,
+              logo: season.champion_team_logo ?? null,
+            },
+          ]
+        : [];
+
+  if (displayTeams.length === 0) return null;
+
+  const isPromotion = label === '승격팀';
+
+  return (
+    <View className="mt-3 rounded-lg bg-amber-50/60 px-3 py-2.5">
+      <View className="mb-1.5 flex-row items-center">
+        {isPromotion ? <ArrowUp size={12} color="#d97706" /> : <Medal size={12} color="#d97706" />}
+        <Text className="ml-1 text-[11px] font-bold text-amber-600">{label}</Text>
+      </View>
+      {displayTeams.map((team, i) => (
+        <View key={team.team_id ?? i} className={`flex-row items-center ${i > 0 ? 'mt-1.5' : ''}`}>
+          <TeamLogo uri={team.logo} size={18} teamName={team.team_name ?? undefined} />
+          <Text className="ml-2 text-sm font-semibold text-amber-800" numberOfLines={1}>
+            {team.team_name}
+          </Text>
+        </View>
+      ))}
+    </View>
+  );
+}
 
 function SeasonCard({ season }: { season: SeasonWithStats }) {
   const router = useRouter();
+  const status = getSeasonStatus(season);
+  const matchCount = season.match_count ?? 0;
+
   return (
     <PressableCard
-      className="mx-4 mb-3"
+      className="mx-5 mb-3"
       onPress={() => router.push(`/seasons/${season.season_id}`)}
     >
-      <View className="flex-row items-center justify-between">
-        <View className="flex-1">
+      {/* 헤더: 시즌명 + 상태 + 화살표 */}
+      <View className="flex-row items-center">
+        <View className="min-w-0 flex-1">
           <Text className="text-base font-bold text-neutral-900" numberOfLines={1}>
             {season.season_name}
           </Text>
-          <Text className="mt-0.5 text-xs text-neutral-500">{season.year}년</Text>
         </View>
-        {statusBadge(season.status)}
+        <Badge variant={status.variant} className="ml-2">
+          {status.label}
+        </Badge>
+        <ChevronRight size={16} color="#d4d4d4" style={{ marginLeft: 4 }} />
       </View>
 
-      {season.champion_team_name && (
-        <View className="mt-2 flex-row items-center">
-          <Text className="text-xs text-amber-600">{season.champion_label ?? '우승팀'}</Text>
-          <TeamLogo
-            uri={season.champion_team_logo}
-            size={16}
-            teamName={season.champion_team_name}
-            className="ml-1"
-          />
-          <Text className="ml-1 text-xs font-medium text-neutral-700">
-            {season.champion_team_name}
-          </Text>
-        </View>
-      )}
+      {/* 메타: 연도 + 경기수 */}
+      <View className="mt-1.5 flex-row items-center gap-3">
+        <Text className="text-xs text-neutral-400">{season.year}년</Text>
+        {matchCount > 0 && <Text className="text-xs text-neutral-400">⚽ {matchCount}경기</Text>}
+      </View>
 
-      {(season.match_count ?? 0) > 0 && (
-        <Text className="mt-1 text-xs text-neutral-400">{season.match_count}경기</Text>
-      )}
+      {/* 우승팀/승격팀 */}
+      <ChampionSection season={season} />
     </PressableCard>
   );
 }
@@ -81,9 +118,10 @@ export default function SeasonsScreen() {
       data={seasons}
       keyExtractor={(item) => String(item.season_id)}
       renderItem={({ item }) => <SeasonCard season={item} />}
-      contentContainerStyle={{ paddingTop: 12, paddingBottom: 24 }}
+      contentContainerStyle={{ paddingTop: 16, paddingBottom: 32 }}
       onEndReached={() => hasNextPage && fetchNextPage()}
       onEndReachedThreshold={0.5}
+      showsVerticalScrollIndicator={false}
       ListFooterComponent={isFetchingNextPage ? <LoadingSpinner size="small" /> : null}
     />
   );

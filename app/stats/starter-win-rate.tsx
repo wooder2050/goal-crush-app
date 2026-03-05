@@ -1,71 +1,264 @@
 import { useQuery } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { Stack, useRouter } from 'expo-router';
+import { ChevronDown, X } from 'lucide-react-native';
 import { useState } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { FlatList, Modal, Pressable, ScrollView, Text, View } from 'react-native';
 
+import { getAllSeasonsPrisma } from '@/api/seasons';
 import { getStarterWinRate } from '@/api/stats';
+import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { SeasonSelect } from '@/components/SeasonSelect';
 import type { WinRateRanking } from '@/features/stats/types/starter-win-rate';
 
+const NUM = { fontVariant: ['tabular-nums' as const] };
+
+/* ── 정렬 옵션 ── */
+const SORT_OPTIONS = [
+  { value: 'win_rate_desc', label: '승률 높은 순' },
+  { value: 'win_rate_asc', label: '승률 낮은 순' },
+  { value: 'matches_played', label: '경기 수 많은 순' },
+] as const;
+
+type SortValue = (typeof SORT_OPTIONS)[number]['value'];
+
+/* ── 출전 유형 옵션 ── */
+const APPEARANCE_OPTIONS = [
+  { value: 'starter', label: '선발' },
+  { value: 'substitute', label: '교체' },
+  { value: 'all', label: '전체' },
+] as const;
+
+type AppearanceValue = (typeof APPEARANCE_OPTIONS)[number]['value'];
+
+/* ── 최소 경기 수 ── */
+const MIN_MATCH_OPTIONS = [1, 3, 5, 10] as const;
+
+/* ── 순위 뱃지 ── */
+function RankBadge({ rank }: { rank: number }) {
+  const bg = rank <= 3 ? 'bg-pink-500/10' : 'bg-neutral-100';
+  const text = rank <= 3 ? 'text-pink-600' : 'text-neutral-500';
+  return (
+    <View className={`h-6 w-6 items-center justify-center rounded-full ${bg}`}>
+      <Text className={`text-xs font-bold ${text}`}>{rank}</Text>
+    </View>
+  );
+}
+
+/* ── 승률 색상 ── */
+function getWinRateColor(val: string): string {
+  const n = parseFloat(val);
+  if (n >= 60) return 'text-emerald-600';
+  if (n >= 40) return 'text-amber-500';
+  return 'text-red-500';
+}
+
+/* ── 필터 칩 ── */
+function FilterChip({
+  label,
+  active,
+  onPress,
+}: {
+  label: string;
+  active?: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      className={`flex-row items-center rounded-full px-3 py-1.5 ${active ? 'bg-pink-500/10' : 'bg-neutral-100'}`}
+      onPress={onPress}
+    >
+      <Text className={`text-xs font-semibold ${active ? 'text-pink-600' : 'text-neutral-500'}`}>
+        {label}
+      </Text>
+      <ChevronDown size={12} color={active ? '#db2777' : '#a3a3a3'} style={{ marginLeft: 2 }} />
+    </Pressable>
+  );
+}
+
+/* ── 바텀시트 ── */
+function FilterSheet<T extends string | number>({
+  visible,
+  onClose,
+  title,
+  options,
+  selected,
+  onSelect,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  title: string;
+  options: { value: T; label: string }[];
+  selected: T;
+  onSelect: (v: T) => void;
+}) {
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <Pressable className="flex-1 bg-black/40" onPress={onClose} />
+      <View className="rounded-t-3xl bg-white px-5 pb-10 pt-4" style={{ maxHeight: '50%' }}>
+        <View className="mb-4 flex-row items-center justify-between">
+          <Text className="text-base font-bold text-neutral-800">{title}</Text>
+          <Pressable onPress={onClose} hitSlop={12}>
+            <X size={20} color="#737373" />
+          </Pressable>
+        </View>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {options.map((opt) => (
+            <Pressable
+              key={String(opt.value)}
+              className={`rounded-xl px-4 py-3 ${selected === opt.value ? 'bg-pink-500/10' : ''}`}
+              onPress={() => { onSelect(opt.value); onClose(); }}
+            >
+              <Text
+                className={`text-sm ${selected === opt.value ? 'font-bold text-pink-600' : 'text-neutral-700'}`}
+              >
+                {opt.label}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+}
+
+/* ── 선수 Row ── */
 function WinRateRow({ player }: { player: WinRateRanking }) {
   const router = useRouter();
   return (
     <Pressable
-      className="flex-row items-center border-b border-neutral-100 px-4 py-3 active:bg-neutral-50"
+      className="flex-row items-center px-4 py-3.5 active:bg-neutral-50"
       onPress={() => router.push(`/players/${player.player_id}`)}
     >
-      <View className="h-6 w-6 items-center justify-center rounded-full bg-neutral-100">
-        <Text className="text-xs font-bold text-neutral-500">{player.rank}</Text>
+      <RankBadge rank={player.rank} />
+      <View style={{ position: 'relative', marginLeft: 8 }}>
+        {player.player_image ? (
+          <Image
+            source={{ uri: player.player_image }}
+            style={{ width: 36, height: 36, borderRadius: 18 }}
+            contentFit="cover"
+            transition={200}
+          />
+        ) : (
+          <View className="h-9 w-9 items-center justify-center rounded-full bg-neutral-100">
+            <Text className="text-sm font-bold text-neutral-400">
+              {player.player_name?.charAt(0)}
+            </Text>
+          </View>
+        )}
+        {player.team_logos && player.team_logos.length > 0 && (
+          <View
+            style={{
+              position: 'absolute',
+              bottom: -2,
+              right: -2,
+              width: 18,
+              height: 18,
+              borderRadius: 9,
+              backgroundColor: '#fff',
+              padding: 1.5,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.1,
+              shadowRadius: 1,
+              elevation: 2,
+            }}
+          >
+            <Image
+              source={{ uri: player.team_logos[0] }}
+              style={{ width: 15, height: 15, borderRadius: 7.5 }}
+              contentFit="cover"
+            />
+          </View>
+        )}
       </View>
-      {player.player_image ? (
-        <Image
-          source={{ uri: player.player_image }}
-          style={{ width: 36, height: 36 }}
-          className="ml-2 rounded-full"
-          contentFit="cover"
-        />
-      ) : (
-        <View className="ml-2 h-9 w-9 items-center justify-center rounded-full bg-neutral-200">
-          <Text className="text-sm font-bold text-neutral-400">
-            {player.player_name?.charAt(0)}
-          </Text>
-        </View>
-      )}
       <View className="ml-3 flex-1">
         <Text className="text-sm font-semibold text-neutral-900">{player.player_name}</Text>
         <Text className="text-xs text-neutral-500">{player.first_team_name ?? player.teams}</Text>
       </View>
       <View className="items-end">
-        <Text className="text-base font-bold text-green-600">{player.win_rate}%</Text>
+        <Text className={`text-base font-bold ${getWinRateColor(player.win_rate)}`} style={NUM}>
+          {player.win_rate}%
+        </Text>
         <Text className="text-[10px] text-neutral-400">
-          {player.matches_played}경기 {player.wins}승
+          {player.wins}승 {player.matches_played - player.wins - player.losses}무 {player.losses}패
         </Text>
       </View>
     </Pressable>
   );
 }
 
+/* ── 메인 페이지 ── */
 export default function StarterWinRatePage() {
   const [seasonId, setSeasonId] = useState<number | null>(null);
+  const [sortBy, setSortBy] = useState<SortValue>('win_rate_desc');
+  const [appearance, setAppearance] = useState<AppearanceValue>('starter');
+  const [minMatches, setMinMatches] = useState(3);
+  const [showSeasonSheet, setShowSeasonSheet] = useState(false);
+  const [showSortSheet, setShowSortSheet] = useState(false);
+  const [showAppearanceSheet, setShowAppearanceSheet] = useState(false);
+  const [showMinMatchSheet, setShowMinMatchSheet] = useState(false);
+
+  const { data: seasons } = useQuery({
+    queryKey: ['allSeasons'],
+    queryFn: getAllSeasonsPrisma,
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const seasonLabel = seasonId
+    ? (seasons?.find((s) => s.season_id === seasonId)?.season_name ?? '시즌')
+    : '전체 시즌';
+  const sortLabel = SORT_OPTIONS.find((o) => o.value === sortBy)?.label ?? '정렬';
+  const appearanceLabel = APPEARANCE_OPTIONS.find((o) => o.value === appearance)?.label ?? '출전';
+
+  const seasonOptions = [
+    { value: 0 as number, label: '전체 시즌' },
+    ...(seasons?.map((s) => ({ value: s.season_id, label: s.season_name })) ?? []),
+  ];
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['starterWinRate', seasonId],
+    queryKey: ['starterWinRate', seasonId, sortBy, appearance, minMatches],
     queryFn: () =>
       getStarterWinRate({
         season_id: seasonId ?? undefined,
         limit: 50,
-        appearance_type: 'starter',
+        sort_by: sortBy,
+        appearance_type: appearance,
+        min_matches: minMatches,
       }),
   });
 
   return (
     <>
-      <Stack.Screen options={{ title: '선발 승률', headerShown: true }} />
+      <Stack.Screen options={{ title: '선발 승률', headerShown: true, headerShadowVisible: false, headerBackButtonDisplayMode: 'minimal' }}
+      />
       <View className="flex-1 bg-neutral-50">
-        <SeasonSelect selectedSeasonId={seasonId} onSelect={setSeasonId} />
+        {/* 필터 */}
+        <View className="flex-row flex-wrap bg-white px-4 pb-3 pt-2" style={{ gap: 8 }}>
+          <FilterChip
+            label={seasonLabel}
+            active={seasonId !== null}
+            onPress={() => setShowSeasonSheet(true)}
+          />
+          <FilterChip
+            label={appearanceLabel}
+            active={appearance !== 'starter'}
+            onPress={() => setShowAppearanceSheet(true)}
+          />
+          <FilterChip
+            label={sortLabel}
+            active={sortBy !== 'win_rate_desc'}
+            onPress={() => setShowSortSheet(true)}
+          />
+          <FilterChip
+            label={`최소 ${minMatches}경기`}
+            active={minMatches !== 3}
+            onPress={() => setShowMinMatchSheet(true)}
+          />
+        </View>
+
+        {/* 목록 */}
         {isLoading ? (
           <LoadingSpinner />
         ) : isError ? (
@@ -75,15 +268,49 @@ export default function StarterWinRatePage() {
             data={data?.rankings ?? []}
             keyExtractor={(item) => String(item.player_id)}
             renderItem={({ item }) => <WinRateRow player={item} />}
-            contentContainerStyle={{ paddingBottom: 24 }}
-            ListEmptyComponent={
-              <View className="items-center py-16">
-                <Text className="text-sm text-neutral-500">데이터가 없습니다.</Text>
-              </View>
-            }
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 32 }}
+            ListEmptyComponent={<EmptyState title="데이터가 없습니다." />}
           />
         )}
       </View>
+
+      {/* 시즌 */}
+      <FilterSheet
+        visible={showSeasonSheet}
+        onClose={() => setShowSeasonSheet(false)}
+        title="시즌"
+        options={seasonOptions}
+        selected={seasonId ?? 0}
+        onSelect={(v) => setSeasonId(v === 0 ? null : v)}
+      />
+      {/* 출전 유형 */}
+      <FilterSheet
+        visible={showAppearanceSheet}
+        onClose={() => setShowAppearanceSheet(false)}
+        title="출전 유형"
+        options={APPEARANCE_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
+        selected={appearance}
+        onSelect={setAppearance}
+      />
+      {/* 정렬 */}
+      <FilterSheet
+        visible={showSortSheet}
+        onClose={() => setShowSortSheet(false)}
+        title="정렬 기준"
+        options={SORT_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
+        selected={sortBy}
+        onSelect={setSortBy}
+      />
+      {/* 최소 경기 수 */}
+      <FilterSheet
+        visible={showMinMatchSheet}
+        onClose={() => setShowMinMatchSheet(false)}
+        title="최소 경기 수"
+        options={MIN_MATCH_OPTIONS.map((n) => ({ value: n, label: `${n}경기` }))}
+        selected={minMatches}
+        onSelect={setMinMatches}
+      />
     </>
   );
 }

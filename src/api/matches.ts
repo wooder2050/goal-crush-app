@@ -27,6 +27,7 @@ export interface LineupPlayer {
   position: string;
   player_name: string;
   jersey_number: number | null;
+  profile_image_url: string | null;
   team_name: string;
   participation_status: 'starting' | 'substitute' | 'bench';
   card_type: 'none' | 'yellow' | 'red_direct' | 'red_accumulated';
@@ -518,6 +519,35 @@ export const getMatchActionsPrisma = async (matchId: number): Promise<RawMatchAc
 export const getMatchRatingsPrisma = async (matchId: number): Promise<MatchRatingsResponse> => {
   try {
     return await apiFetch(`/api/matches/${matchId}/ratings`);
+  } catch {
+    return { match_id: matchId, ratings: [] };
+  }
+};
+
+export interface PlayerMatchXtRating {
+  player_id: number;
+  team_id: number;
+  player_name: string;
+  jersey_number: number | null;
+  profile_image_url: string | null;
+  team_name: string;
+  position: string;
+  xt_rating: number;
+  total_xt: number;
+  offensive_xt: number;
+  defensive_xt: number;
+  actions_count: number;
+  breakdown: Record<string, { count: number; total_xt: number; avg_xt: number }>;
+}
+
+export interface MatchXtRatingsResponse {
+  match_id: number;
+  ratings: PlayerMatchXtRating[];
+}
+
+export const getMatchXtRatingsPrisma = async (matchId: number): Promise<MatchXtRatingsResponse> => {
+  try {
+    return await apiFetch(`/api/matches/${matchId}/xt-ratings`);
   } catch {
     return { match_id: matchId, ratings: [] };
   }

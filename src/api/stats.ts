@@ -87,6 +87,9 @@ export interface HeadToHeadMatch {
   season_name: string;
   home_team_name: string;
   away_team_name: string;
+  location?: string;
+  penalty_home_score?: number;
+  penalty_away_score?: number;
 }
 
 export interface HeadToHeadStats {
@@ -103,6 +106,18 @@ export interface HeadToHeadStats {
   team1_goals: number;
   team2_goals: number;
   recent_matches: HeadToHeadMatch[];
+  biggest_win_team1: {
+    match_date: string;
+    score: string;
+    season: string;
+    margin: number;
+  } | null;
+  biggest_win_team2: {
+    match_date: string;
+    score: string;
+    season: string;
+    margin: number;
+  } | null;
 }
 
 export interface TeamOption {
@@ -198,6 +213,13 @@ export const getTopRatingsPrisma = async (
   limit: number = 10
 ): Promise<TopRatedPlayerRow[]> => {
   return apiFetch(`/api/stats/player-match/top-ratings?season_id=${seasonId}&limit=${limit}`);
+};
+
+export const getTopXtRatingsPrisma = async (
+  seasonId: number,
+  limit: number = 10
+): Promise<TopRatedPlayerRow[]> => {
+  return apiFetch(`/api/stats/player-match/top-xt-ratings?season_id=${seasonId}&limit=${limit}`);
 };
 
 export const getTeamSeasonStatsPrisma = async (seasonId: number): Promise<TeamSeasonStats[]> => {
@@ -297,7 +319,8 @@ export const getHeadToHead = async (
 };
 
 export const getTeamOptions = async (): Promise<TeamOption[]> => {
-  return apiFetch('/api/teams');
+  const res = await apiFetch<{ data: TeamOption[] }>('/api/teams');
+  return res.data;
 };
 
 export const getPlayerVsTeam = async (

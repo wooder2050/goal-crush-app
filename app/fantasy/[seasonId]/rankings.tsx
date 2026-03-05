@@ -1,13 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { ChevronRight, Users } from 'lucide-react-native';
 import { FlatList, Pressable, Text, View } from 'react-native';
 
 import { FantasyRanking, getFantasyRankings } from '@/api/fantasy';
+import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 function RankingRow({ ranking }: { ranking: FantasyRanking }) {
   const router = useRouter();
+  const isTop3 = ranking.rank <= 3;
   const rankBg =
     ranking.rank === 1
       ? 'bg-amber-400'
@@ -15,22 +18,25 @@ function RankingRow({ ranking }: { ranking: FantasyRanking }) {
         ? 'bg-neutral-300'
         : ranking.rank === 3
           ? 'bg-amber-600'
-          : 'bg-neutral-100';
-  const rankText = ranking.rank <= 3 ? 'text-white' : 'text-neutral-500';
+          : 'bg-neutral-50';
+  const rankText = isTop3 ? 'text-white' : 'text-neutral-500';
 
   return (
     <Pressable
-      className="flex-row items-center border-b border-neutral-100 px-4 py-3 active:bg-neutral-50"
+      className={`mx-5 mb-2 flex-row items-center rounded-2xl border border-neutral-100 bg-white px-4 py-3.5 active:bg-neutral-50/80 ${isTop3 ? 'border-primary/10' : ''}`}
       onPress={() => router.push(`/fantasy/team/${ranking.fantasy_team_id}`)}
     >
-      <View className={`h-7 w-7 items-center justify-center rounded-full ${rankBg}`}>
-        <Text className={`text-xs font-bold ${rankText}`}>{ranking.rank}</Text>
+      <View className={`h-8 w-8 items-center justify-center rounded-full ${rankBg}`}>
+        <Text className={`text-xs font-bold tabular-nums ${rankText}`}>{ranking.rank}</Text>
       </View>
       <View className="ml-3 flex-1">
-        <Text className="text-sm font-semibold text-neutral-900">{ranking.team_name}</Text>
-        <Text className="text-xs text-neutral-500">{ranking.user_nickname}</Text>
+        <Text className="text-sm font-bold text-neutral-900">{ranking.team_name}</Text>
+        <Text className="mt-0.5 text-xs text-neutral-400">{ranking.user_nickname}</Text>
       </View>
-      <Text className="text-base font-bold text-primary">{ranking.total_points}pt</Text>
+      <Text className="mr-2 text-base font-bold tabular-nums text-primary">
+        {ranking.total_points}pt
+      </Text>
+      <ChevronRight size={14} color="#d4d4d4" />
     </Pressable>
   );
 }
@@ -46,7 +52,14 @@ export default function FantasyRankingsScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: '판타지 랭킹', headerShown: true }} />
+      <Stack.Screen
+        options={{
+          title: '판타지 랭킹',
+          headerShown: true,
+          headerStyle: { backgroundColor: '#fff' },
+          headerShadowVisible: false,
+        }}
+      />
       <View className="flex-1 bg-neutral-50">
         {isLoading ? (
           <LoadingSpinner />
@@ -57,12 +70,9 @@ export default function FantasyRankingsScreen() {
             data={data?.rankings ?? []}
             keyExtractor={(item) => String(item.fantasy_team_id)}
             renderItem={({ item }) => <RankingRow ranking={item} />}
-            contentContainerStyle={{ paddingBottom: 24 }}
-            ListEmptyComponent={
-              <View className="items-center py-16">
-                <Text className="text-sm text-neutral-500">참가자가 없습니다.</Text>
-              </View>
-            }
+            contentContainerStyle={{ paddingTop: 16, paddingBottom: 32 }}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={<EmptyState icon={Users} message="아직 참가자가 없습니다." />}
           />
         )}
       </View>

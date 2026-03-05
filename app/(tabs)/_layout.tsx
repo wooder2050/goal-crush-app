@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 import { BarChart3, Calendar, Home, Menu, Users } from 'lucide-react-native';
+import { Platform } from 'react-native';
 
 export default function TabLayout() {
   return (
@@ -7,13 +8,31 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: true,
         tabBarActiveTintColor: '#ff4800',
-        tabBarInactiveTintColor: '#a3a3a3',
-        tabBarStyle: {
-          borderTopColor: '#e5e5e5',
+        tabBarInactiveTintColor: '#b5b5b5',
+        tabBarLabelStyle: {
+          fontFamily: 'Inter_500Medium',
+          fontSize: 11,
+          marginTop: -2,
         },
+        tabBarStyle: {
+          backgroundColor: '#FFFFFF',
+          borderTopWidth: 0.5,
+          borderTopColor: '#E5E5E5',
+          height: Platform.OS === 'ios' ? 88 : 64,
+          paddingBottom: Platform.OS === 'ios' ? 28 : 8,
+          paddingTop: 8,
+        },
+        tabBarIconStyle: {
+          marginBottom: 0,
+        },
+        headerStyle: {
+          backgroundColor: '#FFFFFF',
+        },
+        headerShadowVisible: false,
         headerTitleStyle: {
-          fontFamily: 'Inter_600SemiBold',
+          fontFamily: 'Inter_700Bold',
           fontSize: 18,
+          color: '#171717',
         },
       }}
     >
@@ -21,35 +40,35 @@ export default function TabLayout() {
         name="index"
         options={{
           title: '홈',
-          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+          tabBarIcon: ({ color }) => <Home size={22} color={color} strokeWidth={2} />,
         }}
       />
       <Tabs.Screen
         name="seasons"
         options={{
           title: '시즌',
-          tabBarIcon: ({ color, size }) => <Calendar size={size} color={color} />,
+          tabBarIcon: ({ color }) => <Calendar size={22} color={color} strokeWidth={2} />,
         }}
       />
       <Tabs.Screen
         name="players"
         options={{
           title: '선수',
-          tabBarIcon: ({ color, size }) => <Users size={size} color={color} />,
+          tabBarIcon: ({ color }) => <Users size={22} color={color} strokeWidth={2} />,
         }}
       />
       <Tabs.Screen
         name="stats"
         options={{
           title: '통계',
-          tabBarIcon: ({ color, size }) => <BarChart3 size={size} color={color} />,
+          tabBarIcon: ({ color }) => <BarChart3 size={22} color={color} strokeWidth={2} />,
         }}
       />
       <Tabs.Screen
         name="more"
         options={{
           title: '더보기',
-          tabBarIcon: ({ color, size }) => <Menu size={size} color={color} />,
+          tabBarIcon: ({ color }) => <Menu size={22} color={color} strokeWidth={2} />,
         }}
       />
     </Tabs>
