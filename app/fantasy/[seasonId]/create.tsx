@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Check } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import { Alert, FlatList, Pressable, Text, TextInput, View } from 'react-native';
 
@@ -97,34 +98,42 @@ export default function CreateFantasyTeamScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: '팀 만들기', headerShown: true }} />
+      <Stack.Screen
+        options={{
+          title: '팀 만들기',
+          headerShown: true,
+          headerStyle: { backgroundColor: '#fff' },
+          headerShadowVisible: false,
+        }}
+      />
       <View className="flex-1 bg-neutral-50">
-        <View className="border-b border-neutral-200 bg-white px-4 py-3">
+        <View className="border-b border-neutral-100 bg-white px-5 py-3.5">
           <TextInput
-            className="mb-2 h-9 rounded-lg border border-neutral-200 px-3 text-sm"
+            className="mb-2.5 h-10 rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 text-sm text-neutral-900"
             placeholder="팀 이름 (선택)"
+            placeholderTextColor="#b5b5b5"
             value={teamName}
             onChangeText={setTeamName}
           />
-          <Text className="mb-2 text-xs text-neutral-500">
+          <Text className="mb-2 text-xs font-semibold text-neutral-500">
             선택: {selectedPlayers.length}/{MAX_PLAYERS}명
           </Text>
-          <View className="flex-row flex-wrap gap-1">
+          <View className="flex-row flex-wrap gap-1.5">
             {selectedPlayers.map((p) => (
               <Badge key={p.player_id} variant="primary">
                 {p.name}
               </Badge>
             ))}
           </View>
-          <View className="mt-2 flex-row gap-1">
+          <View className="mt-3 flex-row gap-2">
             {['', 'GK', 'DF', 'MF', 'FW'].map((pos) => (
               <Pressable
                 key={pos}
-                className={`rounded-full px-3 py-1 ${positionFilter === pos ? 'bg-primary' : 'bg-neutral-100'}`}
+                className={`rounded-full px-4 py-1.5 ${positionFilter === pos ? 'bg-primary' : 'border border-neutral-200 bg-neutral-50'}`}
                 onPress={() => setPositionFilter(pos)}
               >
                 <Text
-                  className={`text-xs font-medium ${positionFilter === pos ? 'text-white' : 'text-neutral-600'}`}
+                  className={`text-xs font-semibold ${positionFilter === pos ? 'text-white' : 'text-neutral-600'}`}
                 >
                   {pos || '전체'}
                 </Text>
@@ -136,34 +145,41 @@ export default function CreateFantasyTeamScreen() {
         <FlatList
           data={filteredPlayers}
           keyExtractor={(item) => String(item.player_id)}
+          showsVerticalScrollIndicator={false}
           renderItem={({ item }) => {
             const isSelected = selectedPlayers.some((p) => p.player_id === item.player_id);
             return (
               <Pressable
-                className={`flex-row items-center border-b border-neutral-100 px-4 py-3 ${isSelected ? 'bg-primary/5' : ''}`}
+                className={`flex-row items-center border-b border-neutral-100 px-5 py-3.5 ${isSelected ? 'bg-primary/5' : 'bg-white'}`}
                 onPress={() => togglePlayer(item)}
               >
                 <View className="flex-1">
                   <View className="flex-row items-center gap-2">
-                    <Text className="text-sm font-semibold text-neutral-900">{item.name}</Text>
+                    <Text className="text-sm font-bold text-neutral-900">{item.name}</Text>
                     <Badge variant="outline">{item.position}</Badge>
                   </View>
-                  <Text className="text-xs text-neutral-500">{item.team_name}</Text>
+                  <Text className="mt-0.5 text-xs text-neutral-400">{item.team_name}</Text>
                 </View>
-                {isSelected && <Text className="text-lg text-primary">✓</Text>}
+                {isSelected && (
+                  <View className="h-6 w-6 items-center justify-center rounded-full bg-primary">
+                    <Check size={14} color="#fff" strokeWidth={3} />
+                  </View>
+                )}
               </Pressable>
             );
           }}
           contentContainerStyle={{ paddingBottom: 100 }}
         />
 
-        <View className="absolute bottom-0 left-0 right-0 border-t border-neutral-200 bg-white px-4 py-3">
+        <View className="absolute bottom-0 left-0 right-0 border-t border-neutral-100 bg-white px-5 pb-8 pt-3">
           <Pressable
-            className={`rounded-lg py-3 ${selectedPlayers.length === MAX_PLAYERS ? 'bg-primary' : 'bg-neutral-300'}`}
+            className={`rounded-xl py-3.5 ${selectedPlayers.length === MAX_PLAYERS ? 'bg-primary' : 'bg-neutral-200'}`}
             onPress={handleSubmit}
             disabled={mutation.isPending || selectedPlayers.length !== MAX_PLAYERS}
           >
-            <Text className="text-center text-sm font-bold text-white">
+            <Text
+              className={`text-center text-sm font-bold ${selectedPlayers.length === MAX_PLAYERS ? 'text-white' : 'text-neutral-400'}`}
+            >
               {mutation.isPending
                 ? '생성 중...'
                 : `팀 생성 (${selectedPlayers.length}/${MAX_PLAYERS})`}

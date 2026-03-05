@@ -8,6 +8,27 @@ interface SeasonSelectProps {
   onSelect: (seasonId: number | null) => void;
 }
 
+function Pill({
+  label,
+  selected,
+  onPress,
+}: {
+  label: string;
+  selected: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      className={`rounded-full px-4 py-1.5 ${selected ? 'bg-primary' : 'bg-neutral-100'}`}
+      onPress={onPress}
+    >
+      <Text className={`text-xs font-semibold ${selected ? 'text-white' : 'text-neutral-500'}`}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
 export function SeasonSelect({ selectedSeasonId, onSelect }: SeasonSelectProps) {
   const { data: seasons } = useQuery({
     queryKey: ['allSeasons'],
@@ -18,31 +39,17 @@ export function SeasonSelect({ selectedSeasonId, onSelect }: SeasonSelectProps) 
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: 16, gap: 6 }}
-      className="max-h-10 border-b border-neutral-200 bg-white py-1.5"
+      contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
+      className="max-h-11 border-b border-neutral-100 bg-white py-2"
     >
-      <Pressable
-        className={`rounded-full px-3 py-1 ${selectedSeasonId === null ? 'bg-primary' : 'bg-neutral-100'}`}
-        onPress={() => onSelect(null)}
-      >
-        <Text
-          className={`text-xs font-medium ${selectedSeasonId === null ? 'text-white' : 'text-neutral-600'}`}
-        >
-          전체
-        </Text>
-      </Pressable>
+      <Pill label="전체" selected={selectedSeasonId === null} onPress={() => onSelect(null)} />
       {seasons?.map((s: SeasonWithStats) => (
-        <Pressable
+        <Pill
           key={s.season_id}
-          className={`rounded-full px-3 py-1 ${selectedSeasonId === s.season_id ? 'bg-primary' : 'bg-neutral-100'}`}
+          label={s.season_name}
+          selected={selectedSeasonId === s.season_id}
           onPress={() => onSelect(s.season_id)}
-        >
-          <Text
-            className={`text-xs font-medium ${selectedSeasonId === s.season_id ? 'text-white' : 'text-neutral-600'}`}
-          >
-            {s.season_name}
-          </Text>
-        </Pressable>
+        />
       ))}
     </ScrollView>
   );

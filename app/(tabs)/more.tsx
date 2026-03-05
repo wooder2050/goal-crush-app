@@ -1,106 +1,62 @@
 import { useRouter } from 'expo-router';
-import {
-  ChevronRight,
-  Heart,
-  MessageSquare,
-  Star,
-  Trophy,
-  User,
-  UserCog,
-  Users,
-} from 'lucide-react-native';
+import { ChevronRight, UserCog, Users } from 'lucide-react-native';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-
-import { useAuth } from '@/components/AuthProvider';
 
 interface MenuItem {
   label: string;
+  description: string;
   icon: React.ReactNode;
+  iconBg: string;
   href: string;
-  requiresAuth?: boolean;
 }
 
 const menuItems: MenuItem[] = [
   {
     label: '팀',
-    icon: <Users size={20} color="#525252" />,
+    description: '팀 목록 및 상세 정보',
+    icon: <Users size={18} color="#8b5cf6" />,
+    iconBg: 'bg-purple-50',
     href: '/teams',
   },
   {
-    label: '코치',
-    icon: <UserCog size={20} color="#525252" />,
+    label: '감독',
+    description: '감독 프로필 및 전적',
+    icon: <UserCog size={18} color="#3b82f6" />,
+    iconBg: 'bg-blue-50',
     href: '/coaches',
-  },
-  {
-    label: '평점',
-    icon: <Star size={20} color="#525252" />,
-    href: '/ratings',
-  },
-  {
-    label: '판타지',
-    icon: <Trophy size={20} color="#525252" />,
-    href: '/fantasy',
-  },
-  {
-    label: '커뮤니티',
-    icon: <MessageSquare size={20} color="#525252" />,
-    href: '/community',
-  },
-  {
-    label: '응원',
-    icon: <Heart size={20} color="#525252" />,
-    href: '/supports',
-    requiresAuth: true,
-  },
-  {
-    label: '프로필',
-    icon: <User size={20} color="#525252" />,
-    href: '/profile',
-    requiresAuth: true,
   },
 ];
 
 export default function MoreScreen() {
   const router = useRouter();
-  const { user } = useAuth();
-
-  const handlePress = (item: MenuItem) => {
-    if (item.requiresAuth && !user) {
-      router.push('/auth/sign-in');
-      return;
-    }
-    router.push(item.href as never);
-  };
 
   return (
-    <ScrollView className="flex-1 bg-white">
-      <View className="py-2">
+    <ScrollView className="flex-1 bg-neutral-50" showsVerticalScrollIndicator={false}>
+      <View className="gap-2 px-5 pb-10 pt-4">
         {menuItems.map((item) => (
           <Pressable
             key={item.href}
-            className="flex-row items-center px-4 py-4 active:bg-neutral-50"
-            onPress={() => handlePress(item)}
+            className="flex-row items-center rounded-2xl border border-neutral-100 bg-white p-4 active:bg-neutral-50/80"
+            style={{
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.06,
+              shadowRadius: 6,
+              elevation: 2,
+            }}
+            onPress={() => router.push(item.href as never)}
           >
-            {item.icon}
-            <Text className="ml-3 flex-1 text-base text-neutral-800">{item.label}</Text>
-            <ChevronRight size={18} color="#a3a3a3" />
+            <View className={`h-10 w-10 items-center justify-center rounded-xl ${item.iconBg}`}>
+              {item.icon}
+            </View>
+            <View className="ml-3.5 flex-1">
+              <Text className="text-base font-semibold text-neutral-900">{item.label}</Text>
+              <Text className="mt-0.5 text-xs text-neutral-400">{item.description}</Text>
+            </View>
+            <ChevronRight size={16} color="#d4d4d4" />
           </Pressable>
         ))}
       </View>
-
-      {!user && (
-        <View className="mx-4 mt-4 rounded-lg bg-neutral-50 p-4">
-          <Text className="text-sm text-neutral-500">
-            로그인하면 더 많은 기능을 이용할 수 있습니다.
-          </Text>
-          <Pressable
-            className="mt-3 items-center rounded-lg bg-primary py-3"
-            onPress={() => router.push('/auth/sign-in')}
-          >
-            <Text className="text-sm font-semibold text-white">로그인</Text>
-          </Pressable>
-        </View>
-      )}
     </ScrollView>
   );
 }

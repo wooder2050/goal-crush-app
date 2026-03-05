@@ -40,7 +40,21 @@ export default function RootLayout() {
     <AuthProvider>
       <QueryProvider>
         <OfflineBanner />
-        <Stack screenOptions={{ headerShown: false }}>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: '#FAFAFA' },
+            headerStyle: { backgroundColor: '#FFFFFF' },
+            headerShadowVisible: false,
+            headerTitleStyle: {
+              fontFamily: 'Inter_600SemiBold',
+              fontSize: 17,
+              color: '#171717',
+            },
+            headerTintColor: '#171717',
+            headerBackButtonDisplayMode: 'minimal',
+          }}
+        >
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="auth" options={{ presentation: 'modal' }} />
         </Stack>

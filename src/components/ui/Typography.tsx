@@ -5,11 +5,21 @@ type TypographyProps = TextProps & {
 };
 
 export function H1({ className, ...props }: TypographyProps) {
-  return <Text className={`text-2xl font-bold text-neutral-900 ${className ?? ''}`} {...props} />;
+  return (
+    <Text
+      className={`text-2xl font-bold tracking-tight text-neutral-900 ${className ?? ''}`}
+      {...props}
+    />
+  );
 }
 
 export function H2({ className, ...props }: TypographyProps) {
-  return <Text className={`text-xl font-bold text-neutral-900 ${className ?? ''}`} {...props} />;
+  return (
+    <Text
+      className={`text-xl font-bold tracking-tight text-neutral-900 ${className ?? ''}`}
+      {...props}
+    />
+  );
 }
 
 export function H3({ className, ...props }: TypographyProps) {
@@ -18,14 +28,14 @@ export function H3({ className, ...props }: TypographyProps) {
 
 export function H4({ className, ...props }: TypographyProps) {
   return (
-    <Text className={`text-base font-semibold text-neutral-900 ${className ?? ''}`} {...props} />
+    <Text className={`text-base font-semibold text-neutral-800 ${className ?? ''}`} {...props} />
   );
 }
 
 export function Body({ className, ...props }: TypographyProps) {
-  return <Text className={`text-sm text-neutral-700 ${className ?? ''}`} {...props} />;
+  return <Text className={`text-sm leading-5 text-neutral-600 ${className ?? ''}`} {...props} />;
 }
 
 export function Caption({ className, ...props }: TypographyProps) {
-  return <Text className={`text-xs text-neutral-500 ${className ?? ''}`} {...props} />;
+  return <Text className={`text-xs text-neutral-400 ${className ?? ''}`} {...props} />;
 }
