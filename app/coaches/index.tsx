@@ -12,7 +12,13 @@ import { Card } from '@/components/ui/Card';
 
 const NUM = { fontVariant: ['tabular-nums' as const] };
 
-function CoachCard({ coach, router }: { coach: CoachesPageItem; router: ReturnType<typeof useRouter> }) {
+function CoachCard({
+  coach,
+  router,
+}: {
+  coach: CoachesPageItem;
+  router: ReturnType<typeof useRouter>;
+}) {
   const totalMatches = coach.total_matches || 0;
   const hasTeam = !!coach.current_team_verified;
 
@@ -41,17 +47,13 @@ function CoachCard({ coach, router }: { coach: CoachesPageItem; router: ReturnTy
               className="items-center justify-center rounded-xl bg-neutral-100"
               style={{ width: 56, height: 68 }}
             >
-              <Text className="text-xl font-bold text-neutral-300">
-                {coach.name?.charAt(0)}
-              </Text>
+              <Text className="text-xl font-bold text-neutral-300">{coach.name?.charAt(0)}</Text>
             </View>
           )}
 
           {/* Info */}
           <View className="ml-3.5 flex-1">
-            <Text className="text-[15px] font-bold text-neutral-900">
-              {coach.name}
-            </Text>
+            <Text className="text-[15px] font-bold text-neutral-900">{coach.name}</Text>
 
             {/* Current team */}
             {hasTeam ? (
@@ -66,9 +68,7 @@ function CoachCard({ coach, router }: { coach: CoachesPageItem; router: ReturnTy
                 </Text>
               </View>
             ) : (
-              <Text className="mt-1.5 text-[12px] text-neutral-400">
-                현재 맡은 팀 없음
-              </Text>
+              <Text className="mt-1.5 text-[12px] text-neutral-400">현재 맡은 팀 없음</Text>
             )}
 
             {/* Stats row */}

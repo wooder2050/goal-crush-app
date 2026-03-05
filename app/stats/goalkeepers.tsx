@@ -59,33 +59,49 @@ function MainStat({ gk, sortBy }: { gk: GoalkeeperRanking; sortBy: SortValue }) 
     case 'clean_sheet_percentage':
       return (
         <View className="items-end">
-          <Text className={`text-base font-bold ${getCSColor(gk.clean_sheet_percentage)}`} style={NUM}>
+          <Text
+            className={`text-base font-bold ${getCSColor(gk.clean_sheet_percentage)}`}
+            style={NUM}
+          >
             {gk.clean_sheet_percentage}%
           </Text>
-          <Text className="text-[10px] text-neutral-400">CS {gk.clean_sheets} / {gk.matches_played}경기</Text>
+          <Text className="text-[10px] text-neutral-400">
+            CS {gk.clean_sheets} / {gk.matches_played}경기
+          </Text>
         </View>
       );
     case 'clean_sheets':
       return (
         <View className="items-end">
-          <Text className="text-base font-bold text-emerald-600" style={NUM}>{gk.clean_sheets}CS</Text>
+          <Text className="text-base font-bold text-emerald-600" style={NUM}>
+            {gk.clean_sheets}CS
+          </Text>
           <Text className="text-[10px] text-neutral-400">{gk.matches_played}경기</Text>
         </View>
       );
     case 'matches_played':
       return (
         <View className="items-end">
-          <Text className="text-base font-bold text-neutral-900" style={NUM}>{gk.matches_played}경기</Text>
-          <Text className="text-[10px] text-neutral-400">실점 {gk.goals_conceded} · CS {gk.clean_sheets}</Text>
+          <Text className="text-base font-bold text-neutral-900" style={NUM}>
+            {gk.matches_played}경기
+          </Text>
+          <Text className="text-[10px] text-neutral-400">
+            실점 {gk.goals_conceded} · CS {gk.clean_sheets}
+          </Text>
         </View>
       );
     default: // goals_conceded_per_match
       return (
         <View className="items-end">
-          <Text className={`text-base font-bold ${getGCColor(gk.goals_conceded_per_match)}`} style={NUM}>
+          <Text
+            className={`text-base font-bold ${getGCColor(gk.goals_conceded_per_match)}`}
+            style={NUM}
+          >
             {gk.goals_conceded_per_match}
           </Text>
-          <Text className="text-[10px] text-neutral-400">실점 {gk.goals_conceded} / {gk.matches_played}경기</Text>
+          <Text className="text-[10px] text-neutral-400">
+            실점 {gk.goals_conceded} / {gk.matches_played}경기
+          </Text>
         </View>
       );
   }
@@ -145,7 +161,10 @@ function FilterSheet<T extends string | number>({
             <Pressable
               key={String(opt.value)}
               className={`rounded-xl px-4 py-3 ${selected === opt.value ? 'bg-blue-500/10' : ''}`}
-              onPress={() => { onSelect(opt.value); onClose(); }}
+              onPress={() => {
+                onSelect(opt.value);
+                onClose();
+              }}
             >
               <Text
                 className={`text-sm ${selected === opt.value ? 'font-bold text-blue-600' : 'text-neutral-700'}`}
@@ -255,7 +274,13 @@ export default function GoalkeepersPage() {
 
   return (
     <>
-      <Stack.Screen options={{ title: '골키퍼 랭킹', headerShown: true, headerShadowVisible: false, headerBackButtonDisplayMode: 'minimal' }}
+      <Stack.Screen
+        options={{
+          title: '골키퍼 랭킹',
+          headerShown: true,
+          headerShadowVisible: false,
+          headerBackButtonDisplayMode: 'minimal',
+        }}
       />
       <View className="flex-1 bg-neutral-50">
         {/* 필터 */}

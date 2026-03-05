@@ -72,9 +72,7 @@ function HeroHeader({
             className="items-center justify-center rounded-2xl bg-neutral-100"
             style={{ width: 96, height: 120 }}
           >
-            <Text className="text-3xl font-bold text-neutral-300">
-              {coach.name?.charAt(0)}
-            </Text>
+            <Text className="text-3xl font-bold text-neutral-300">{coach.name?.charAt(0)}</Text>
           </View>
         )}
 
@@ -91,9 +89,7 @@ function HeroHeader({
           </View>
         )}
 
-        <Text className="mt-3 text-xl font-bold tracking-tight text-neutral-900">
-          {coach.name}
-        </Text>
+        <Text className="mt-3 text-xl font-bold tracking-tight text-neutral-900">{coach.name}</Text>
 
         {coach.nationality && (
           <Text className="mt-1 text-[13px] text-neutral-400">{coach.nationality}</Text>
@@ -105,14 +101,8 @@ function HeroHeader({
             style={{ gap: 5 }}
             onPress={() => router.push(`/teams/${currentTeam.team_id}`)}
           >
-            <TeamLogo
-              uri={currentTeam.logo}
-              size={20}
-              teamName={currentTeam.team_name}
-            />
-            <Text className="text-[13px] font-medium text-primary">
-              {currentTeam.team_name}
-            </Text>
+            <TeamLogo uri={currentTeam.logo} size={20} teamName={currentTeam.team_name} />
+            <Text className="text-[13px] font-medium text-primary">{currentTeam.team_name}</Text>
           </Pressable>
         ) : (
           <Text className="mt-2 text-[13px] text-neutral-400">맡은 팀 없음</Text>
@@ -181,22 +171,11 @@ function StatsCard({
   );
 }
 
-function StatCell({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: number;
-  accent?: string;
-}) {
+function StatCell({ label, value, accent }: { label: string; value: number; accent?: string }) {
   return (
     <View className="flex-1 items-center rounded-xl bg-neutral-50 py-2.5">
       <Text className="text-[10px] font-medium text-neutral-400">{label}</Text>
-      <Text
-        className={`mt-0.5 text-base font-bold ${accent ?? 'text-neutral-900'}`}
-        style={NUM}
-      >
+      <Text className={`mt-0.5 text-base font-bold ${accent ?? 'text-neutral-900'}`} style={NUM}>
         {value}
       </Text>
     </View>
@@ -208,7 +187,12 @@ function StatCell({
 function TrophiesSection({
   trophies,
 }: {
-  trophies: { total: number; league_wins: number; cup_wins: number; items: Array<{ season_id: number; season_name: string }> };
+  trophies: {
+    total: number;
+    league_wins: number;
+    cup_wins: number;
+    items: Array<{ season_id: number; season_name: string }>;
+  };
 }) {
   if (trophies.total === 0) return null;
 
@@ -219,7 +203,10 @@ function TrophiesSection({
         {/* Summary pills */}
         <View className="mb-3 flex-row" style={{ gap: 8 }}>
           {trophies.league_wins > 0 && (
-            <View className="flex-row items-center rounded-full bg-amber-50 px-3 py-1" style={{ gap: 4 }}>
+            <View
+              className="flex-row items-center rounded-full bg-amber-50 px-3 py-1"
+              style={{ gap: 4 }}
+            >
               <Text className="text-[11px]">⭐</Text>
               <Text className="text-[11px] font-bold text-amber-700" style={NUM}>
                 리그 {trophies.league_wins}회
@@ -227,7 +214,10 @@ function TrophiesSection({
             </View>
           )}
           {trophies.cup_wins > 0 && (
-            <View className="flex-row items-center rounded-full bg-primary/10 px-3 py-1" style={{ gap: 4 }}>
+            <View
+              className="flex-row items-center rounded-full bg-primary/10 px-3 py-1"
+              style={{ gap: 4 }}
+            >
               <Text className="text-[11px]">🏆</Text>
               <Text className="text-[11px] font-bold text-primary" style={NUM}>
                 컵 {trophies.cup_wins}회
@@ -256,11 +246,7 @@ function TrophiesSection({
 
 /* ─── Season Stats Section ────────────────────────────────── */
 
-function SeasonStatsSection({
-  seasonStats,
-}: {
-  seasonStats: CoachSeasonStats[];
-}) {
+function SeasonStatsSection({ seasonStats }: { seasonStats: CoachSeasonStats[] }) {
   if (!seasonStats || seasonStats.length === 0) return null;
 
   return (
@@ -397,9 +383,7 @@ export default function CoachDetailScreen() {
 
           {overview.trophies && <TrophiesSection trophies={overview.trophies} />}
 
-          {overview.season_stats && (
-            <SeasonStatsSection seasonStats={overview.season_stats} />
-          )}
+          {overview.season_stats && <SeasonStatsSection seasonStats={overview.season_stats} />}
         </View>
       </ScrollView>
     </>

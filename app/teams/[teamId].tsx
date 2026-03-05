@@ -89,8 +89,7 @@ function getSeasonOutcome(
   const pv = { bg: 'bg-violet-50', text: 'text-violet-700' };
   const ind = { bg: 'bg-indigo-50', text: 'text-indigo-700' };
 
-  if (category === 'GIFA_CUP' && position === 1)
-    return { label: '우승', emoji: '🏆', ...win };
+  if (category === 'GIFA_CUP' && position === 1) return { label: '우승', emoji: '🏆', ...win };
 
   const isCup =
     typeof seasonName === 'string' &&
@@ -103,16 +102,13 @@ function getSeasonOutcome(
   if (league === 'super' && position === 6) return { label: '강등', emoji: '⬇️', ...down };
   if (league === 'super' && position === 5) return { label: '승강 PO', emoji: '↕️', ...mid };
   if (league === 'challenge' && position === 1) return { label: '승격', emoji: '⬆️', ...up };
-  if (league === 'challenge' && position === 2)
-    return { label: '승강 PO', emoji: '↕️', ...mid };
+  if (league === 'challenge' && position === 2) return { label: '승강 PO', emoji: '↕️', ...mid };
   if (league === 'challenge' && position === 4 && si >= 3)
     return { label: '방출', emoji: '❌', ...down };
   if (league === 'cup' && position === 1) return { label: '우승', emoji: '🏆', ...win };
   if (league === 'g-league' && position === 1) return { label: '우승', emoji: '🏆', ...win };
-  if (league === 'playoff' && position === 1)
-    return { label: '슈퍼리그행', emoji: '⬆️', ...pv };
-  if (league === 'playoff' && position === 2)
-    return { label: '챌린지리그행', emoji: '➡️', ...ind };
+  if (league === 'playoff' && position === 1) return { label: '슈퍼리그행', emoji: '⬆️', ...pv };
+  if (league === 'playoff' && position === 2) return { label: '챌린지리그행', emoji: '➡️', ...ind };
   return null;
 }
 
@@ -130,13 +126,7 @@ const NUM = { fontVariant: ['tabular-nums' as const] };
 
 /* ─── Section Header ──────────────────────────────────────── */
 
-function SectionHeader({
-  title,
-  trailing,
-}: {
-  title: string;
-  trailing?: React.ReactNode;
-}) {
+function SectionHeader({ title, trailing }: { title: string; trailing?: React.ReactNode }) {
   return (
     <View className="mb-4 flex-row items-center justify-between">
       <View className="flex-row items-center">
@@ -207,9 +197,7 @@ function HeroHeader({
         </Text>
 
         {team.founded_year && (
-          <Text className="mt-1 text-[13px] text-neutral-400">
-            {team.founded_year}년 창단
-          </Text>
+          <Text className="mt-1 text-[13px] text-neutral-400">{team.founded_year}년 창단</Text>
         )}
 
         {team.description && (
@@ -448,10 +436,7 @@ function StatCell({
   return (
     <View className="flex-1 items-center rounded-xl bg-neutral-50 py-2.5">
       <Text className="text-[10px] font-medium text-neutral-400">{label}</Text>
-      <Text
-        className={`mt-0.5 text-base font-bold ${accent ?? 'text-neutral-900'}`}
-        style={NUM}
-      >
+      <Text className={`mt-0.5 text-base font-bold ${accent ?? 'text-neutral-900'}`} style={NUM}>
         {value}
       </Text>
     </View>
@@ -507,10 +492,7 @@ function SquadSection({
 
                 {/* Name + Position */}
                 <View className="mr-2 flex-1">
-                  <Text
-                    className="text-[13px] font-semibold text-neutral-800"
-                    numberOfLines={1}
-                  >
+                  <Text className="text-[13px] font-semibold text-neutral-800" numberOfLines={1}>
                     {p.name}
                   </Text>
                   <View className="mt-0.5 flex-row items-center" style={{ gap: 4 }}>
@@ -520,9 +502,7 @@ function SquadSection({
                       </Text>
                     </View>
                     {p.seasons && p.seasons.length > 0 && (
-                      <Text className="text-[10px] text-neutral-400">
-                        {p.seasons.length}시즌
-                      </Text>
+                      <Text className="text-[10px] text-neutral-400">{p.seasons.length}시즌</Text>
                     )}
                   </View>
                 </View>
@@ -571,11 +551,7 @@ function SquadSection({
 
 /* ─── Season Standings Section ────────────────────────────── */
 
-function SeasonStandingsSection({
-  standings,
-}: {
-  standings: TeamSeasonStandingRow[];
-}) {
+function SeasonStandingsSection({ standings }: { standings: TeamSeasonStandingRow[] }) {
   const participated = standings.filter((r) => r.participated);
   if (participated.length === 0) return null;
 
@@ -608,10 +584,7 @@ function SeasonStandingsSection({
                     {row.year}
                   </Text>
                   {row.season_name && (
-                    <Text
-                      className="flex-1 text-[12px] text-neutral-500"
-                      numberOfLines={1}
-                    >
+                    <Text className="flex-1 text-[12px] text-neutral-500" numberOfLines={1}>
                       {shortenSeasonName(row.season_name)}
                     </Text>
                   )}
@@ -626,13 +599,8 @@ function SeasonStandingsSection({
               {/* Bottom: Position + Stats + Outcome */}
               <View className="mt-2 flex-row items-center" style={{ gap: 8 }}>
                 {row.position ? (
-                  <View
-                    className={`rounded-lg px-2.5 py-1 ${posColors?.bg ?? 'bg-neutral-100'}`}
-                  >
-                    <Text
-                      className={`text-xs font-bold ${posColors?.text ?? ''}`}
-                      style={NUM}
-                    >
+                  <View className={`rounded-lg px-2.5 py-1 ${posColors?.bg ?? 'bg-neutral-100'}`}>
+                    <Text className={`text-xs font-bold ${posColors?.text ?? ''}`} style={NUM}>
                       {medal ? `${medal} ` : ''}
                       {row.position}위
                     </Text>
@@ -720,11 +688,7 @@ export default function TeamDetailScreen() {
       <ScrollView
         className="flex-1 bg-neutral-50"
         refreshControl={
-          <RefreshControl
-            refreshing={false}
-            onRefresh={() => refetchTeam()}
-            tintColor="#ff4800"
-          />
+          <RefreshControl refreshing={false} onRefresh={() => refetchTeam()} tintColor="#ff4800" />
         }
         showsVerticalScrollIndicator={false}
       >
@@ -735,12 +699,8 @@ export default function TeamDetailScreen() {
         <View className="px-4 pb-12 pt-5" style={{ gap: 20 }}>
           {highlights && <HighlightsSection highlights={highlights} router={router} />}
           {stats && <StatsCard stats={stats} />}
-          {players && players.length > 0 && (
-            <SquadSection players={players} router={router} />
-          )}
-          {standings && standings.length > 0 && (
-            <SeasonStandingsSection standings={standings} />
-          )}
+          {players && players.length > 0 && <SquadSection players={players} router={router} />}
+          {standings && standings.length > 0 && <SeasonStandingsSection standings={standings} />}
         </View>
       </ScrollView>
     </>

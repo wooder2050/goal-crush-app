@@ -48,7 +48,10 @@ function TeamSelectSheet({
             <Pressable
               key={String(item.team_id)}
               className={`flex-row items-center rounded-xl px-4 py-3 ${selected === item.team_id ? 'bg-amber-500/10' : ''}`}
-              onPress={() => { onSelect(item.team_id); onClose(); }}
+              onPress={() => {
+                onSelect(item.team_id);
+                onClose();
+              }}
             >
               <TeamLogo uri={item.logo} size={28} teamName={item.team_name} />
               <Text
@@ -144,13 +147,17 @@ function ResultSection({ stats }: { stats: HeadToHeadStats }) {
           <Text className="text-lg font-bold text-blue-600" style={NUM}>
             {getWinPct(stats.team1_wins, stats.total_matches)}%
           </Text>
-          <Text className="text-[10px] text-neutral-400" numberOfLines={1}>{stats.team1_name} 승률</Text>
+          <Text className="text-[10px] text-neutral-400" numberOfLines={1}>
+            {stats.team1_name} 승률
+          </Text>
         </View>
         <View className="flex-1 items-center rounded-2xl border border-neutral-100 bg-white py-3">
           <Text className="text-lg font-bold text-red-500" style={NUM}>
             {getWinPct(stats.team2_wins, stats.total_matches)}%
           </Text>
-          <Text className="text-[10px] text-neutral-400" numberOfLines={1}>{stats.team2_name} 승률</Text>
+          <Text className="text-[10px] text-neutral-400" numberOfLines={1}>
+            {stats.team2_name} 승률
+          </Text>
         </View>
       </View>
       <View className="flex-row" style={{ gap: 8 }}>
@@ -226,13 +233,21 @@ function ResultSection({ stats }: { stats: HeadToHeadStats }) {
                     </Text>
                   </View>
                   <View className="flex-1 flex-row items-center justify-center" style={{ gap: 6 }}>
-                    <Text className="text-[13px] font-medium text-neutral-700" numberOfLines={1} style={{ maxWidth: 80, textAlign: 'right' }}>
+                    <Text
+                      className="text-[13px] font-medium text-neutral-700"
+                      numberOfLines={1}
+                      style={{ maxWidth: 80, textAlign: 'right' }}
+                    >
                       {m.home_team_name}
                     </Text>
                     <Text className="text-sm font-bold text-neutral-900" style={NUM}>
                       {m.home_score} - {m.away_score}
                     </Text>
-                    <Text className="text-[13px] font-medium text-neutral-700" numberOfLines={1} style={{ maxWidth: 80 }}>
+                    <Text
+                      className="text-[13px] font-medium text-neutral-700"
+                      numberOfLines={1}
+                      style={{ maxWidth: 80 }}
+                    >
                       {m.away_team_name}
                     </Text>
                   </View>
@@ -284,7 +299,14 @@ export default function HeadToHeadPage() {
 
   return (
     <>
-      <Stack.Screen options={{ title: '상대전적', headerShown: true, headerShadowVisible: false, headerBackButtonDisplayMode: 'minimal' }} />
+      <Stack.Screen
+        options={{
+          title: '상대전적',
+          headerShown: true,
+          headerShadowVisible: false,
+          headerBackButtonDisplayMode: 'minimal',
+        }}
+      />
       <View className="flex-1 bg-neutral-50">
         {/* 팀 선택 */}
         <View className="bg-white px-4 pb-4 pt-3">

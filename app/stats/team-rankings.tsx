@@ -51,7 +51,8 @@ function MainStat({ team, sortBy }: { team: TeamRanking; sortBy: SortValue }) {
       return (
         <View className="items-end">
           <Text className={`text-base font-bold ${getGDColor(team.goal_difference)}`} style={NUM}>
-            {team.goal_difference > 0 ? '+' : ''}{team.goal_difference}
+            {team.goal_difference > 0 ? '+' : ''}
+            {team.goal_difference}
           </Text>
           <Text className="text-[10px] text-neutral-400">
             {team.goals_for}득점 {team.goals_against}실점
@@ -61,35 +62,49 @@ function MainStat({ team, sortBy }: { team: TeamRanking; sortBy: SortValue }) {
     case 'goals_for':
       return (
         <View className="items-end">
-          <Text className="text-base font-bold text-blue-600" style={NUM}>{team.goals_for}골</Text>
+          <Text className="text-base font-bold text-blue-600" style={NUM}>
+            {team.goals_for}골
+          </Text>
           <Text className="text-[10px] text-neutral-400">{team.matches_played}경기</Text>
         </View>
       );
     case 'goals_against':
       return (
         <View className="items-end">
-          <Text className="text-base font-bold text-red-500" style={NUM}>{team.goals_against}실점</Text>
+          <Text className="text-base font-bold text-red-500" style={NUM}>
+            {team.goals_against}실점
+          </Text>
           <Text className="text-[10px] text-neutral-400">{team.matches_played}경기</Text>
         </View>
       );
     case 'goals_for_per_match':
       return (
         <View className="items-end">
-          <Text className="text-base font-bold text-blue-600" style={NUM}>{team.goals_for_per_match}</Text>
-          <Text className="text-[10px] text-neutral-400">{team.goals_for}골 / {team.matches_played}경기</Text>
+          <Text className="text-base font-bold text-blue-600" style={NUM}>
+            {team.goals_for_per_match}
+          </Text>
+          <Text className="text-[10px] text-neutral-400">
+            {team.goals_for}골 / {team.matches_played}경기
+          </Text>
         </View>
       );
     case 'goals_against_per_match':
       return (
         <View className="items-end">
-          <Text className="text-base font-bold text-red-500" style={NUM}>{team.goals_against_per_match}</Text>
-          <Text className="text-[10px] text-neutral-400">{team.goals_against}실점 / {team.matches_played}경기</Text>
+          <Text className="text-base font-bold text-red-500" style={NUM}>
+            {team.goals_against_per_match}
+          </Text>
+          <Text className="text-[10px] text-neutral-400">
+            {team.goals_against}실점 / {team.matches_played}경기
+          </Text>
         </View>
       );
     case 'matches_played':
       return (
         <View className="items-end">
-          <Text className="text-base font-bold text-neutral-900" style={NUM}>{team.matches_played}경기</Text>
+          <Text className="text-base font-bold text-neutral-900" style={NUM}>
+            {team.matches_played}경기
+          </Text>
           <Text className="text-[10px] text-neutral-400">
             {team.wins}승 {team.draws}무 {team.losses}패
           </Text>
@@ -98,7 +113,9 @@ function MainStat({ team, sortBy }: { team: TeamRanking; sortBy: SortValue }) {
     default: // win_rate
       return (
         <View className="items-end">
-          <Text className="text-base font-bold text-emerald-600" style={NUM}>{team.win_rate}%</Text>
+          <Text className="text-base font-bold text-emerald-600" style={NUM}>
+            {team.win_rate}%
+          </Text>
           <Text className="text-[10px] text-neutral-400">
             {team.wins}승 {team.draws}무 {team.losses}패
           </Text>
@@ -161,7 +178,10 @@ function FilterSheet<T extends string | number>({
             <Pressable
               key={String(opt.value)}
               className={`rounded-xl px-4 py-3 ${selected === opt.value ? 'bg-amber-500/10' : ''}`}
-              onPress={() => { onSelect(opt.value); onClose(); }}
+              onPress={() => {
+                onSelect(opt.value);
+                onClose();
+              }}
             >
               <Text
                 className={`text-sm ${selected === opt.value ? 'font-bold text-amber-600' : 'text-neutral-700'}`}
@@ -245,7 +265,13 @@ export default function TeamRankingsPage() {
 
   return (
     <>
-      <Stack.Screen options={{ title: '팀 랭킹', headerShown: true, headerShadowVisible: false, headerBackButtonDisplayMode: 'minimal' }}
+      <Stack.Screen
+        options={{
+          title: '팀 랭킹',
+          headerShown: true,
+          headerShadowVisible: false,
+          headerBackButtonDisplayMode: 'minimal',
+        }}
       />
       <View className="flex-1 bg-neutral-50">
         {/* 필터 */}

@@ -43,8 +43,7 @@ function TeamCard({ team, rank }: { team: TeamWithExtras; rank: number }) {
           <View
             className="absolute left-0 top-0 z-10 rounded-br-xl rounded-tl-2xl px-2.5 py-1"
             style={{
-              backgroundColor:
-                rank === 1 ? '#fbbf24' : rank === 2 ? '#d1d5db' : '#fb923c',
+              backgroundColor: rank === 1 ? '#fbbf24' : rank === 2 ? '#d1d5db' : '#fb923c',
             }}
           >
             <Text className="text-[10px] font-extrabold text-white" style={NUM}>
@@ -73,10 +72,7 @@ function TeamCard({ team, rank }: { team: TeamWithExtras; rank: number }) {
 
         {/* Info section */}
         <View className="items-center px-3 pb-4 pt-2">
-          <Text
-            className="text-center text-[13px] font-bold text-neutral-900"
-            numberOfLines={1}
-          >
+          <Text className="text-center text-[13px] font-bold text-neutral-900" numberOfLines={1}>
             {team.team_name}
           </Text>
 
@@ -92,7 +88,10 @@ function TeamCard({ team, rank }: { team: TeamWithExtras; rank: number }) {
           {hasWins ? (
             <View className="mt-2 flex-row flex-wrap justify-center" style={{ gap: 3 }}>
               {leagueWins > 0 && (
-                <View className="flex-row items-center rounded-full bg-amber-50 px-2 py-0.5" style={{ gap: 2 }}>
+                <View
+                  className="flex-row items-center rounded-full bg-amber-50 px-2 py-0.5"
+                  style={{ gap: 2 }}
+                >
                   <Text className="text-[9px]">⭐</Text>
                   <Text className="text-[9px] font-bold text-amber-700" style={NUM}>
                     리그 {leagueWins}
@@ -100,7 +99,10 @@ function TeamCard({ team, rank }: { team: TeamWithExtras; rank: number }) {
                 </View>
               )}
               {cupWins > 0 && (
-                <View className="flex-row items-center rounded-full bg-primary/8 px-2 py-0.5" style={{ gap: 2 }}>
+                <View
+                  className="flex-row items-center rounded-full bg-primary/8 px-2 py-0.5"
+                  style={{ gap: 2 }}
+                >
                   <Text className="text-[9px]">🏆</Text>
                   <Text className="text-[9px] font-bold text-primary" style={NUM}>
                     컵 {cupWins}
@@ -128,14 +130,12 @@ export default function TeamsScreen() {
   if (isLoading) return <LoadingSpinner />;
   if (isError) return <ErrorState onRetry={() => refetch()} />;
 
-  const teams = (data ?? []).sort(
-    (a: TeamWithExtras, b: TeamWithExtras) => {
-      const ca = a.championships_count ?? 0;
-      const cb = b.championships_count ?? 0;
-      if (cb !== ca) return cb - ca;
-      return a.team_name.localeCompare(b.team_name);
-    }
-  );
+  const teams = (data ?? []).sort((a: TeamWithExtras, b: TeamWithExtras) => {
+    const ca = a.championships_count ?? 0;
+    const cb = b.championships_count ?? 0;
+    if (cb !== ca) return cb - ca;
+    return a.team_name.localeCompare(b.team_name);
+  });
 
   return (
     <>
@@ -161,9 +161,7 @@ export default function TeamsScreen() {
         contentContainerStyle={{ paddingTop: 14, paddingBottom: 32 }}
         ListHeaderComponent={
           <View className="mb-2 px-4">
-            <Text className="text-[13px] text-neutral-400">
-              우승 횟수 순
-            </Text>
+            <Text className="text-[13px] text-neutral-400">우승 횟수 순</Text>
           </View>
         }
         showsVerticalScrollIndicator={false}

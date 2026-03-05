@@ -108,7 +108,10 @@ function FilterSheet<T extends string | number>({
             <Pressable
               key={String(opt.value)}
               className={`rounded-xl px-4 py-3 ${selected === opt.value ? 'bg-pink-500/10' : ''}`}
-              onPress={() => { onSelect(opt.value); onClose(); }}
+              onPress={() => {
+                onSelect(opt.value);
+                onClose();
+              }}
             >
               <Text
                 className={`text-sm ${selected === opt.value ? 'font-bold text-pink-600' : 'text-neutral-700'}`}
@@ -231,7 +234,13 @@ export default function StarterWinRatePage() {
 
   return (
     <>
-      <Stack.Screen options={{ title: '선발 승률', headerShown: true, headerShadowVisible: false, headerBackButtonDisplayMode: 'minimal' }}
+      <Stack.Screen
+        options={{
+          title: '선발 승률',
+          headerShown: true,
+          headerShadowVisible: false,
+          headerBackButtonDisplayMode: 'minimal',
+        }}
       />
       <View className="flex-1 bg-neutral-50">
         {/* 필터 */}

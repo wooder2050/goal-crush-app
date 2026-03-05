@@ -46,43 +46,63 @@ function MainStat({ player, sortBy }: { player: PlayerRanking; sortBy: SortValue
     case 'goals':
       return (
         <View className="items-end">
-          <Text className="text-base font-bold text-primary" style={NUM}>{player.goals}골</Text>
+          <Text className="text-base font-bold text-primary" style={NUM}>
+            {player.goals}골
+          </Text>
           <Text className="text-[10px] text-neutral-400">{player.matches_played}경기</Text>
         </View>
       );
     case 'assists':
       return (
         <View className="items-end">
-          <Text className="text-base font-bold text-neutral-900" style={NUM}>{player.assists}도움</Text>
+          <Text className="text-base font-bold text-neutral-900" style={NUM}>
+            {player.assists}도움
+          </Text>
           <Text className="text-[10px] text-neutral-400">{player.matches_played}경기</Text>
         </View>
       );
     case 'goals_per_match':
       return (
         <View className="items-end">
-          <Text className="text-base font-bold text-primary" style={NUM}>{player.goals_per_match}</Text>
-          <Text className="text-[10px] text-neutral-400">{player.goals}골 / {player.matches_played}경기</Text>
+          <Text className="text-base font-bold text-primary" style={NUM}>
+            {player.goals_per_match}
+          </Text>
+          <Text className="text-[10px] text-neutral-400">
+            {player.goals}골 / {player.matches_played}경기
+          </Text>
         </View>
       );
     case 'assists_per_match':
       return (
         <View className="items-end">
-          <Text className="text-base font-bold text-neutral-900" style={NUM}>{player.assists_per_match}</Text>
-          <Text className="text-[10px] text-neutral-400">{player.assists}도움 / {player.matches_played}경기</Text>
+          <Text className="text-base font-bold text-neutral-900" style={NUM}>
+            {player.assists_per_match}
+          </Text>
+          <Text className="text-[10px] text-neutral-400">
+            {player.assists}도움 / {player.matches_played}경기
+          </Text>
         </View>
       );
     case 'attack_points_per_match':
       return (
         <View className="items-end">
-          <Text className="text-base font-bold text-neutral-900" style={NUM}>{player.attack_points_per_match}</Text>
-          <Text className="text-[10px] text-neutral-400">{player.attack_points}AP / {player.matches_played}경기</Text>
+          <Text className="text-base font-bold text-neutral-900" style={NUM}>
+            {player.attack_points_per_match}
+          </Text>
+          <Text className="text-[10px] text-neutral-400">
+            {player.attack_points}AP / {player.matches_played}경기
+          </Text>
         </View>
       );
     default: // attack_points
       return (
         <View className="items-end">
-          <Text className="text-base font-bold text-neutral-900" style={NUM}>{player.attack_points}</Text>
-          <Text className="text-[10px] text-neutral-400">{player.goals}골 {player.assists}도움</Text>
+          <Text className="text-base font-bold text-neutral-900" style={NUM}>
+            {player.attack_points}
+          </Text>
+          <Text className="text-[10px] text-neutral-400">
+            {player.goals}골 {player.assists}도움
+          </Text>
         </View>
       );
   }
@@ -103,9 +123,7 @@ function FilterChip({
       className={`flex-row items-center rounded-full px-3 py-1.5 ${active ? 'bg-primary/10' : 'bg-neutral-100'}`}
       onPress={onPress}
     >
-      <Text
-        className={`text-xs font-semibold ${active ? 'text-primary' : 'text-neutral-500'}`}
-      >
+      <Text className={`text-xs font-semibold ${active ? 'text-primary' : 'text-neutral-500'}`}>
         {label}
       </Text>
       <ChevronDown size={12} color={active ? '#ff4800' : '#a3a3a3'} style={{ marginLeft: 2 }} />
@@ -144,7 +162,10 @@ function FilterSheet<T extends string | number>({
             <Pressable
               key={String(opt.value)}
               className={`rounded-xl px-4 py-3 ${selected === opt.value ? 'bg-primary/10' : ''}`}
-              onPress={() => { onSelect(opt.value); onClose(); }}
+              onPress={() => {
+                onSelect(opt.value);
+                onClose();
+              }}
             >
               <Text
                 className={`text-sm ${selected === opt.value ? 'font-bold text-primary' : 'text-neutral-700'}`}
@@ -256,7 +277,13 @@ export default function ScoringPage() {
 
   return (
     <>
-      <Stack.Screen options={{ title: '득점 랭킹', headerShown: true, headerShadowVisible: false, headerBackButtonDisplayMode: 'minimal' }}
+      <Stack.Screen
+        options={{
+          title: '득점 랭킹',
+          headerShown: true,
+          headerShadowVisible: false,
+          headerBackButtonDisplayMode: 'minimal',
+        }}
       />
       <View className="flex-1 bg-neutral-50">
         {/* 필터 */}
