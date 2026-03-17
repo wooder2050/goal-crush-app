@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { TeamLogo } from '@/components/TeamLogo';
+import { sanitizeLabel } from '@/lib/utils';
 
 const NUM = { fontVariant: ['tabular-nums' as const] };
 
@@ -259,7 +260,9 @@ function ResultSection({ stats }: { stats: HeadToHeadStats }) {
                       (PK {m.penalty_home_score}-{m.penalty_away_score})
                     </Text>
                   )}
-                  <Text className="text-[10px] text-neutral-400">{m.season_name}</Text>
+                  <Text className="text-[10px] text-neutral-400">
+                    {sanitizeLabel(m.season_name)}
+                  </Text>
                 </View>
               </Pressable>
             );

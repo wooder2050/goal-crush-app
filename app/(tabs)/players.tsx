@@ -12,6 +12,7 @@ import { ErrorState } from '@/components/ErrorState';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { TeamLogo } from '@/components/TeamLogo';
 import { PressableCard } from '@/components/ui/Card';
+import { sanitizeLabel } from '@/lib/utils';
 
 const NUM = { fontVariant: ['tabular-nums' as const] };
 
@@ -186,7 +187,7 @@ function SeasonBadges({
       {visible.map((s, i) => (
         <View key={i} className="rounded-md bg-neutral-100 px-1.5 py-0.5">
           <Text className="text-[10px] font-medium text-neutral-500">
-            {s.season_name ?? `${s.year}`}
+            {sanitizeLabel(s.season_name) || `${s.year}`}
           </Text>
         </View>
       ))}
@@ -286,7 +287,7 @@ export default function PlayersScreen() {
 
   const seasonItems = (seasons ?? []).map((s) => ({
     id: s.season_id,
-    label: s.season_name ?? `시즌 ${s.season_id}`,
+    label: sanitizeLabel(s.season_name) || `시즌 ${s.season_id}`,
   }));
 
   const selectedTeamName = teamItems.find((t) => t.id === selectedTeamId)?.label;

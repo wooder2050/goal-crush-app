@@ -10,6 +10,7 @@ import { ErrorState } from '@/components/ErrorState';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Badge } from '@/components/ui/Badge';
 import { Card, PressableCard } from '@/components/ui/Card';
+import { sanitizeLabel } from '@/lib/utils';
 
 function SeasonCard({ season }: { season: FantasySeasonItem }) {
   const router = useRouter();
@@ -23,7 +24,7 @@ function SeasonCard({ season }: { season: FantasySeasonItem }) {
       <View className="flex-row items-center justify-between">
         <View className="flex-1">
           <Text className="text-base font-bold tracking-tight text-neutral-900">
-            {season.season_name ?? `${season.year}년 ${season.month}월`}
+            {sanitizeLabel(season.season_name) || `${season.year}년 ${season.month}월`}
           </Text>
           <Text className="mt-0.5 text-xs text-neutral-400">
             {format(new Date(season.start_date), 'MM/dd')} ~{' '}
@@ -119,7 +120,7 @@ export default function FantasyScreen() {
                 <View>
                   <Text className="text-sm font-semibold text-neutral-900">{team.team_name}</Text>
                   <Text className="mt-0.5 text-xs text-neutral-400">
-                    {team.players.length}명 · {team.season_name}
+                    {team.players.length}명 · {sanitizeLabel(team.season_name)}
                   </Text>
                 </View>
                 <View className="flex-row items-center gap-2">

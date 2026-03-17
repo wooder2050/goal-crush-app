@@ -26,6 +26,7 @@ import { ErrorState } from '@/components/ErrorState';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { TeamLogo } from '@/components/TeamLogo';
 import { MatchWithTeams, PlayerSeasonStatsWithNames } from '@/lib/types';
+import { sanitizeLabel } from '@/lib/utils';
 
 const NUM = { fontVariant: ['tabular-nums' as const] };
 
@@ -831,7 +832,7 @@ export default function SeasonDetailScreen() {
     <View className="flex-1 bg-neutral-50">
       <Stack.Screen
         options={{
-          title: season?.season_name ?? '시즌',
+          title: sanitizeLabel(season?.season_name) || '시즌',
           headerShown: true,
           headerStyle: { backgroundColor: '#fff' },
           headerShadowVisible: false,

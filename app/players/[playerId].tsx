@@ -12,6 +12,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { TeamLogo } from '@/components/TeamLogo';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
+import { sanitizeLabel } from '@/lib/utils';
 
 const NUM = { fontVariant: ['tabular-nums' as const] };
 
@@ -35,15 +36,9 @@ function PositionBadge({ position, count }: { position: string; count?: number }
   );
 }
 
-/* ── 시즌명에서 "골때리는 그녀들" 제거 ── */
+/* ── 시즌명 축약 ── */
 function shortenSeasonName(name: string | null): string {
-  if (!name) return '-';
-  return (
-    name
-      .replace(/골\s*때리는\s*그녀들\s*/g, '')
-      .replace(/^\s+/, '')
-      .trim() || name
-  );
+  return sanitizeLabel(name) || '-';
 }
 
 /* ── 통계 박스 ── */

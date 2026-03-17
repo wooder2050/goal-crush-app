@@ -10,6 +10,7 @@ import { ErrorState } from '@/components/ErrorState';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
+import { sanitizeLabel } from '@/lib/utils';
 
 export default function FantasyTeamDetailScreen() {
   const { teamId } = useLocalSearchParams<{ teamId: string }>();
@@ -53,7 +54,7 @@ export default function FantasyTeamDetailScreen() {
             {team.total_points}pt
           </Text>
           {team.season_name && (
-            <Text className="mt-1 text-sm text-neutral-400">{team.season_name}</Text>
+            <Text className="mt-1 text-sm text-neutral-400">{sanitizeLabel(team.season_name)}</Text>
           )}
         </View>
 

@@ -27,7 +27,7 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "com.goalcrush.app"
+      "package": "com.goalcrush.datacenter"
     },
     "web": {
       "favicon": "./assets/favicon.png",

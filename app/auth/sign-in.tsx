@@ -47,8 +47,8 @@ export default function SignInScreen() {
           <View className="mb-4 h-16 w-16 items-center justify-center rounded-2xl bg-primary">
             <Text className="text-2xl font-bold text-white">G</Text>
           </View>
-          <Text className="text-xl font-bold text-neutral-900">골 때리는 그녀들</Text>
-          <Text className="mt-1 text-sm text-neutral-400">데이터 센터에 로그인</Text>
+          <Text className="text-xl font-bold text-neutral-900">골크러쉬</Text>
+          <Text className="mt-1 text-sm text-neutral-400">데이터센터에 로그인</Text>
         </View>
 
         <View className="mb-4">

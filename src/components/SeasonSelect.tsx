@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Pressable, ScrollView, Text } from 'react-native';
 
 import { getAllSeasonsPrisma, SeasonWithStats } from '@/api/seasons';
+import { sanitizeLabel } from '@/lib/utils';
 
 interface SeasonSelectProps {
   selectedSeasonId: number | null;
@@ -46,7 +47,7 @@ export function SeasonSelect({ selectedSeasonId, onSelect }: SeasonSelectProps) 
       {seasons?.map((s: SeasonWithStats) => (
         <Pill
           key={s.season_id}
-          label={s.season_name}
+          label={sanitizeLabel(s.season_name)}
           selected={selectedSeasonId === s.season_id}
           onPress={() => onSelect(s.season_id)}
         />

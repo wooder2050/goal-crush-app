@@ -9,6 +9,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { TeamLogo } from '@/components/TeamLogo';
 import { Badge } from '@/components/ui/Badge';
 import { PressableCard } from '@/components/ui/Card';
+import { sanitizeLabel } from '@/lib/utils';
 
 function getSeasonStatus(season: SeasonWithStats): {
   label: string;
@@ -77,7 +78,7 @@ function SeasonCard({ season }: { season: SeasonWithStats }) {
       <View className="flex-row items-center">
         <View className="min-w-0 flex-1">
           <Text className="text-base font-bold text-neutral-900" numberOfLines={1}>
-            {season.season_name}
+            {sanitizeLabel(season.season_name)}
           </Text>
         </View>
         <Badge variant={status.variant} className="ml-2">

@@ -16,11 +16,12 @@ import { ErrorState } from '@/components/ErrorState';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { TeamLogo } from '@/components/TeamLogo';
 import { Card } from '@/components/ui/Card';
+import { sanitizeLabel } from '@/lib/utils';
 
 /* ─── helpers ─────────────────────────────────────────────── */
 
 function shortenSeasonName(label: string): string {
-  return label.replace(/골때리는 그녀들|골 때리는 그녀들/g, '').trim();
+  return sanitizeLabel(label);
 }
 
 type League = 'super' | 'challenge' | 'playoff' | 'cup' | 'g-league' | 'other';
