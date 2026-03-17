@@ -11,6 +11,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import type { PlayerRanking } from '@/features/stats/types/scoring-rankings';
+import { sanitizeLabel } from '@/lib/utils';
 
 const NUM = { fontVariant: ['tabular-nums' as const] };
 
@@ -255,13 +256,13 @@ export default function ScoringPage() {
   });
 
   const seasonLabel = seasonId
-    ? (seasons?.find((s) => s.season_id === seasonId)?.season_name ?? '시즌')
+    ? sanitizeLabel(seasons?.find((s) => s.season_id === seasonId)?.season_name) || '시즌'
     : '전체 시즌';
   const sortLabel = SORT_OPTIONS.find((o) => o.value === sortBy)?.label ?? '정렬';
 
   const seasonOptions = [
     { value: 0 as number, label: '전체 시즌' },
-    ...(seasons?.map((s) => ({ value: s.season_id, label: s.season_name })) ?? []),
+    ...(seasons?.map((s) => ({ value: s.season_id, label: sanitizeLabel(s.season_name) })) ?? []),
   ];
 
   const { data, isLoading, isError, refetch } = useQuery({

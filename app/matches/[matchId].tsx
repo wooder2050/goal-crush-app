@@ -33,6 +33,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { TeamLogo } from '@/components/TeamLogo';
 import { Card } from '@/components/ui/Card';
 import { MatchWithTeams } from '@/lib/types';
+import { sanitizeLabel } from '@/lib/utils';
 
 const NUM = { fontVariant: ['tabular-nums' as const] };
 
@@ -364,12 +365,14 @@ function ScoreHeader({
       <View className="items-center px-5">
         {match.season && (
           <View className="rounded-full bg-primary/10 px-3 py-1">
-            <Text className="text-[11px] font-bold text-primary">{match.season.season_name}</Text>
+            <Text className="text-[11px] font-bold text-primary">
+              {sanitizeLabel(match.season.season_name)}
+            </Text>
           </View>
         )}
         {match.description && (
           <Text className="mt-1.5 text-center text-[11px] text-neutral-400">
-            {match.description}
+            {sanitizeLabel(match.description)}
           </Text>
         )}
         <Text className="mt-1 text-center text-xs text-neutral-400">

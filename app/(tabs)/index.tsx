@@ -9,6 +9,7 @@ import { CareerStatsWidget } from '@/features/home/components/CareerStatsWidget'
 import { MatchesWidget } from '@/features/home/components/MatchesWidget';
 import { PlayerStatsWidget } from '@/features/home/components/PlayerStatsWidget';
 import { StandingsWidget } from '@/features/home/components/StandingsWidget';
+import { sanitizeLabel } from '@/lib/utils';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -38,7 +39,7 @@ export default function HomeScreen() {
         />
         <View className="px-5 pt-4">
           <Text className="text-2xl font-bold tracking-tight text-neutral-900">
-            골 때리는 그녀들
+            골크러쉬 데이터센터
           </Text>
 
           {data.currentSeason && (
@@ -54,7 +55,7 @@ export default function HomeScreen() {
               >
                 <View className="h-1.5 w-1.5 rounded-full bg-primary" />
                 <Text className="text-[12px] font-bold text-primary">
-                  {data.currentSeason.season_name}
+                  {sanitizeLabel(data.currentSeason.season_name)}
                 </Text>
               </View>
             </Pressable>

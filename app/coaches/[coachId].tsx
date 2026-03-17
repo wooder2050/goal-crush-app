@@ -9,12 +9,9 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { TeamLogo } from '@/components/TeamLogo';
 import { Card } from '@/components/ui/Card';
 import type { CoachSeasonStats } from '@/lib/types';
+import { sanitizeLabel } from '@/lib/utils';
 
 const NUM = { fontVariant: ['tabular-nums' as const] };
-
-function shortenSeasonName(label: string): string {
-  return label.replace(/골때리는 그녀들|골 때리는 그녀들/g, '').trim();
-}
 
 /* ─── Section Header ──────────────────────────────────────── */
 
@@ -234,7 +231,7 @@ function TrophiesSection({
               className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5"
             >
               <Text className="text-[10px] font-semibold text-amber-800">
-                🏆 {shortenSeasonName(t.season_name)}
+                🏆 {sanitizeLabel(t.season_name)}
               </Text>
             </View>
           ))}
@@ -265,7 +262,7 @@ function SeasonStatsSection({ seasonStats }: { seasonStats: CoachSeasonStats[] }
               {/* Top row: season name + win rate */}
               <View className="flex-row items-center justify-between">
                 <Text className="flex-1 text-[13px] font-bold text-neutral-800" numberOfLines={1}>
-                  {shortenSeasonName(s.season_name)}
+                  {sanitizeLabel(s.season_name)}
                 </Text>
                 <View className="rounded-full bg-primary/10 px-2.5 py-0.5">
                   <Text className="text-[11px] font-bold text-primary" style={NUM}>

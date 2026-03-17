@@ -12,6 +12,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { SeasonSelect } from '@/components/SeasonSelect';
 import { Badge } from '@/components/ui/Badge';
 import type { PlayerAbilityRating } from '@/features/player-ratings/types';
+import { sanitizeLabel } from '@/lib/utils';
 
 function RatingCard({ rating }: { rating: PlayerAbilityRating }) {
   const router = useRouter();
@@ -44,7 +45,7 @@ function RatingCard({ rating }: { rating: PlayerAbilityRating }) {
             {rating.player?.name}
           </Text>
           <Text className="mt-0.5 text-xs text-neutral-400">
-            {rating.season?.season_name} · {rating.user?.korean_nickname}
+            {sanitizeLabel(rating.season?.season_name)} · {rating.user?.korean_nickname}
           </Text>
         </View>
         {rating.overall_rating != null && (
