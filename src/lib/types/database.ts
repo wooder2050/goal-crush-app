@@ -190,6 +190,7 @@ export interface Season {
     | 'CHALLENGE_LEAGUE'
     | 'PLAYOFF'
     | 'SBS_CUP'
+    | 'CUP'
     | 'GIFA_CUP'
     | 'OTHER'
     | 'CHAMPION_MATCH'
@@ -972,6 +973,7 @@ export interface Database {
         | 'CHALLENGE_LEAGUE'
         | 'PLAYOFF'
         | 'SBS_CUP'
+        | 'CUP'
         | 'GIFA_CUP'
         | 'CHAMPION_MATCH'
         | 'OTHER';

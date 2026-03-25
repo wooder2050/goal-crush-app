@@ -38,7 +38,7 @@ const LEAGUE_LABELS: Record<League, string> = {
 const LEAGUE_FULL_LABELS: Record<string, string> = {
   super: '슈퍼리그',
   challenge: '챌린지리그',
-  cup: 'SBS 컵',
+  cup: '컵',
   'g-league': 'G리그',
 };
 
