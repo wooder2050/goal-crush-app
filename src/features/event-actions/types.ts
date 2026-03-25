@@ -1,8 +1,8 @@
-// SPADL 기반 액션 타입 (풋살 규칙 적용)
+// SPADL 기반 액션 타입
 export type ActionType =
   | 'PASS'
   | 'CROSS'
-  | 'KICK_IN' // 풋살 규칙: 킥인 (스로인 대신)
+  | 'KICK_IN' // 킥인 (스로인 대신)
   | 'CORNER_KICK'
   | 'FREE_KICK'
   | 'GOAL_KICK'
@@ -33,7 +33,7 @@ export type ActionResult =
 // 신체 부위 타입
 export type BodyPart = 'FOOT' | 'HEAD' | 'OTHER';
 
-// 피치 좌표 (풋살: 40m x 20m)
+// 피치 좌표 (40m x 20m)
 export interface PitchCoordinate {
   x: number; // 0-40
   y: number; // 0-20
