@@ -1,8 +1,11 @@
 import { useRouter } from 'expo-router';
 import {
   Award,
+  BarChart3,
   ChevronRight,
+  Crown,
   Goal,
+  Radio,
   Repeat2,
   Shield,
   Swords,
@@ -55,6 +58,24 @@ const STAT_PAGES = [
     description: '승부차기 기록',
     path: '/stats/penalty-shootout',
     icon: <Repeat2 size={20} color="#14b8a6" />,
+  },
+  {
+    title: '선수 비교',
+    description: '두 선수 기록 비교',
+    path: '/stats/player-compare',
+    icon: <BarChart3 size={20} color="#6366f1" />,
+  },
+  {
+    title: '파워랭킹',
+    description: '포지션별 종합 순위',
+    path: '/stats/power-ranking',
+    icon: <Crown size={20} color="#d97706" />,
+  },
+  {
+    title: '방송 데이터',
+    description: '경기별 방송 기록',
+    path: '/stats/viewership-ratings',
+    icon: <Radio size={20} color="#0ea5e9" />,
   },
 ];
 

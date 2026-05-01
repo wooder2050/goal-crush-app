@@ -106,6 +106,93 @@ export const getPlayersByPositionPrisma = async (position: string): Promise<Play
 
 Object.defineProperty(getPlayersByPositionPrisma, 'queryKey', { value: 'playersByPosition' });
 
+// --- 트로피 & 개인 어워드 ---
+
+export interface PlayerTrophy {
+  team_id: number;
+  team_name: string;
+  logo: string | null;
+  trophies: Array<{
+    season_id: number;
+    season_name: string;
+    year: number | null;
+    category: string | null;
+  }>;
+}
+
+export interface PlayerTrophiesResponse {
+  player_id: number;
+  total: number;
+  trophies: PlayerTrophy[];
+}
+
+export const getPlayerTrophies = async (playerId: number): Promise<PlayerTrophiesResponse> => {
+  return apiFetch(`/api/players/${playerId}/trophies`);
+};
+
+Object.defineProperty(getPlayerTrophies, 'queryKey', { value: 'playerTrophies' });
+
+export interface IndividualAward {
+  award_type: string;
+  award_label: string;
+  season_id: number;
+  season_name: string;
+  category: string | null;
+  stat_value: number;
+  is_shared: boolean;
+}
+
+export interface IndividualAwardsResponse {
+  player_id: number;
+  total: number;
+  awards: IndividualAward[];
+}
+
+export const getPlayerIndividualAwards = async (
+  playerId: number
+): Promise<IndividualAwardsResponse> => {
+  return apiFetch(`/api/players/${playerId}/individual-awards`);
+};
+
+Object.defineProperty(getPlayerIndividualAwards, 'queryKey', { value: 'playerIndividualAwards' });
+
+// --- 골키퍼 통계 ---
+
+export interface GoalkeeperMatchRow {
+  match_id: number;
+  match_date: string;
+  season_name: string | null;
+  opponent_name: string | null;
+  opponent_logo: string | null;
+  goals_conceded: number;
+  is_clean_sheet: boolean;
+  is_home: boolean;
+  home_score: number | null;
+  away_score: number | null;
+}
+
+export interface GoalkeeperSeasonRow {
+  season_name: string;
+  matches_played: number;
+  goals_conceded: number;
+  clean_sheets: number;
+  clean_sheet_percentage: string;
+}
+
+export interface GoalkeeperStatsResponse {
+  recent_matches: GoalkeeperMatchRow[];
+  clean_sheet_matches: GoalkeeperMatchRow[];
+  season_stats: GoalkeeperSeasonRow[];
+}
+
+export const getPlayerGoalkeeperStats = async (
+  playerId: number
+): Promise<GoalkeeperStatsResponse> => {
+  return apiFetch(`/api/players/${playerId}/goalkeeper-stats`);
+};
+
+Object.defineProperty(getPlayerGoalkeeperStats, 'queryKey', { value: 'playerGoalkeeperStats' });
+
 export const getPlayerSummaryPrisma = async (
   playerId: number,
   teamId?: number

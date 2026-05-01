@@ -1,4 +1,4 @@
-// Goal Crush Data Center database type definitions (Supabase-aligned)
+// GTN Data Center database type definitions (Supabase-aligned)
 
 export interface User {
   user_id: string;
@@ -173,6 +173,7 @@ export interface Team {
   secondary_color?: string | null;
   founded_year?: number | null;
   description?: string | null;
+  about?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
 }
