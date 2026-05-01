@@ -81,8 +81,18 @@ Object.defineProperty(getTeamSeasonStandingsPrisma, 'queryKey', {
 export const getTeamHighlightsPrisma = async (
   teamId: number
 ): Promise<{
-  top_appearances: { player_id: number; name: string; appearances: number; profile_image_url?: string | null } | null;
-  top_scorer: { player_id: number; name: string; goals: number; profile_image_url?: string | null } | null;
+  top_appearances: {
+    player_id: number;
+    name: string;
+    appearances: number;
+    profile_image_url?: string | null;
+  } | null;
+  top_scorer: {
+    player_id: number;
+    name: string;
+    goals: number;
+    profile_image_url?: string | null;
+  } | null;
   championships: {
     count: number;
     seasons: Array<{ season_id: number; season_name: string | null; year: number | null }>;

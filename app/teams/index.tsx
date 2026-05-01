@@ -25,9 +25,17 @@ function isLightColor(hex: string | null | undefined): boolean {
 function inferLeague(seasonName: string | null): string {
   if (!seasonName) return 'other';
   const n = seasonName.toLowerCase();
-  if (n.includes('슈퍼') || n.includes('super') || n.includes('파일럿') || n.includes('시즌 1')) return 'super';
+  if (n.includes('슈퍼') || n.includes('super') || n.includes('파일럿') || n.includes('시즌 1'))
+    return 'super';
   if (n.includes('g리그') || n.includes('g-league') || n.includes('조별')) return 'g-league';
-  if (n.includes('champion') || n.includes('챔피언') || n.includes('sbs') || n.includes('cup') || n.includes('컵')) return 'cup';
+  if (
+    n.includes('champion') ||
+    n.includes('챔피언') ||
+    n.includes('sbs') ||
+    n.includes('cup') ||
+    n.includes('컵')
+  )
+    return 'cup';
   return 'other';
 }
 
@@ -36,7 +44,9 @@ function TeamCard({ team }: { team: TeamWithExtras }) {
 
   const primaryColor = team.primary_color ?? '#1F2937';
   const headerBg = isLightColor(primaryColor)
-    ? team.secondary_color && !isLightColor(team.secondary_color) ? team.secondary_color : '#1F2937'
+    ? team.secondary_color && !isLightColor(team.secondary_color)
+      ? team.secondary_color
+      : '#1F2937'
     : primaryColor;
   const light = isLightColor(headerBg);
   const headerText = light ? '#111827' : '#FFFFFF';
@@ -64,28 +74,60 @@ function TeamCard({ team }: { team: TeamWithExtras }) {
       {/* 팀색 배너 + 로고 + 이름 + 우승 요약 */}
       <View
         className="flex-row items-center px-4 py-3.5"
-        style={{ backgroundColor: headerBg, gap: 10, borderTopLeftRadius: 16, borderTopRightRadius: 16 }}
+        style={{
+          backgroundColor: headerBg,
+          gap: 10,
+          borderTopLeftRadius: 16,
+          borderTopRightRadius: 16,
+        }}
       >
         {/* 로고 - 팀 색상 링 보존 */}
-        <View style={{ width: 46, height: 46, borderRadius: 23, borderWidth: 2, borderColor: light ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.6)', backgroundColor: '#fff', overflow: 'hidden' }}>
+        <View
+          style={{
+            width: 46,
+            height: 46,
+            borderRadius: 23,
+            borderWidth: 2,
+            borderColor: light ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.6)',
+            backgroundColor: '#fff',
+            overflow: 'hidden',
+          }}
+        >
           {team.logo ? (
-            <Image source={{ uri: team.logo }} style={{ width: 42, height: 42, borderRadius: 21 }} contentFit="cover" />
+            <Image
+              source={{ uri: team.logo }}
+              style={{ width: 42, height: 42, borderRadius: 21 }}
+              contentFit="cover"
+            />
           ) : (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ color: headerBg, fontSize: 16, fontWeight: 'bold' }}>{team.team_name?.charAt(0)}</Text>
+              <Text style={{ color: headerBg, fontSize: 16, fontWeight: 'bold' }}>
+                {team.team_name?.charAt(0)}
+              </Text>
             </View>
           )}
         </View>
 
         {/* 팀명 + 창단년도 */}
         <View className="min-w-0 flex-1">
-          <Text style={{ color: headerText, fontSize: 16, fontWeight: '600' }} numberOfLines={1}>{team.team_name}</Text>
-          <Text style={{ color: headerSub, fontSize: 12, marginTop: 1 }}>{team.founded_year ? `${team.founded_year}년 창단` : ''}</Text>
+          <Text style={{ color: headerText, fontSize: 16, fontWeight: '600' }} numberOfLines={1}>
+            {team.team_name}
+          </Text>
+          <Text style={{ color: headerSub, fontSize: 12, marginTop: 1 }}>
+            {team.founded_year ? `${team.founded_year}년 창단` : ''}
+          </Text>
         </View>
 
         {/* 우승 요약 칩 (단순화) */}
         {totalWins > 0 && (
-          <View style={{ backgroundColor: 'rgba(0,0,0,0.25)', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 4 }}>
+          <View
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.25)',
+              borderRadius: 12,
+              paddingHorizontal: 8,
+              paddingVertical: 4,
+            }}
+          >
             <Text style={{ color: '#fff', fontSize: 11, fontWeight: '700' }}>
               {leagueWins.length > 0 && `⭐${leagueWins.length}`}
               {leagueWins.length > 0 && cupWins.length > 0 && ' '}
@@ -101,20 +143,34 @@ function TeamCard({ team }: { team: TeamWithExtras }) {
         {championships.length > 0 ? (
           <View className="flex-row flex-wrap" style={{ gap: 4 }}>
             {leagueWins.slice(0, 3).map((c) => (
-              <View key={c.season_id} className="flex-row items-center rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5" style={{ gap: 2 }}>
+              <View
+                key={c.season_id}
+                className="flex-row items-center rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5"
+                style={{ gap: 2 }}
+              >
                 <Text style={{ fontSize: 10 }}>⭐</Text>
-                <Text style={{ fontSize: 10, fontWeight: '500', color: '#92400E' }}>{sanitizeLabel(c.season_name ?? '')}</Text>
+                <Text style={{ fontSize: 10, fontWeight: '500', color: '#92400E' }}>
+                  {sanitizeLabel(c.season_name ?? '')}
+                </Text>
               </View>
             ))}
             {cupWins.slice(0, 2).map((c) => (
-              <View key={c.season_id} className="flex-row items-center rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5" style={{ gap: 2 }}>
+              <View
+                key={c.season_id}
+                className="flex-row items-center rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5"
+                style={{ gap: 2 }}
+              >
                 <Text style={{ fontSize: 10 }}>🏆</Text>
-                <Text style={{ fontSize: 10, fontWeight: '500', color: '#5B21B6' }}>{sanitizeLabel(c.season_name ?? '')}</Text>
+                <Text style={{ fontSize: 10, fontWeight: '500', color: '#5B21B6' }}>
+                  {sanitizeLabel(c.season_name ?? '')}
+                </Text>
               </View>
             ))}
             {championships.length > 5 && (
               <View className="rounded-full bg-neutral-100 px-2 py-0.5">
-                <Text style={{ fontSize: 10, fontWeight: '500', color: '#6B7280' }}>+{championships.length - 5}</Text>
+                <Text style={{ fontSize: 10, fontWeight: '500', color: '#6B7280' }}>
+                  +{championships.length - 5}
+                </Text>
               </View>
             )}
           </View>
@@ -127,22 +183,54 @@ function TeamCard({ team }: { team: TeamWithExtras }) {
           <View className="mt-auto pt-3" style={{ gap: 8 }}>
             {reps.map((p) => {
               const role = (p as { role?: string }).role ?? 'appearances';
-              const statLabel = role === 'goals' ? `${p.goals ?? 0}골` : role === 'assists' ? `${p.assists ?? 0}도움` : `${p.appearances}경기`;
-              const roleLabel = role === 'goals' ? '최다 득점' : role === 'assists' ? '최다 도움' : '최다 출전';
+              const statLabel =
+                role === 'goals'
+                  ? `${p.goals ?? 0}골`
+                  : role === 'assists'
+                    ? `${p.assists ?? 0}도움`
+                    : `${p.appearances}경기`;
+              const roleLabel =
+                role === 'goals' ? '최다 득점' : role === 'assists' ? '최다 도움' : '최다 출전';
               return (
-                <View key={`${p.player_id}-${role}`} className="flex-row items-center" style={{ gap: 8 }}>
+                <View
+                  key={`${p.player_id}-${role}`}
+                  className="flex-row items-center"
+                  style={{ gap: 8 }}
+                >
                   {p.profile_image_url ? (
-                    <Image source={{ uri: p.profile_image_url }} style={{ width: 30, height: 30, borderRadius: 15 }} contentFit="cover" />
+                    <Image
+                      source={{ uri: p.profile_image_url }}
+                      style={{ width: 30, height: 30, borderRadius: 15 }}
+                      contentFit="cover"
+                    />
                   ) : (
-                    <View style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#F3F4F6', alignItems: 'center', justifyContent: 'center' }}>
-                      <Text style={{ fontSize: 11, fontWeight: '500', color: '#9CA3AF' }}>{p.name.charAt(0)}</Text>
+                    <View
+                      style={{
+                        width: 30,
+                        height: 30,
+                        borderRadius: 15,
+                        backgroundColor: '#F3F4F6',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Text style={{ fontSize: 11, fontWeight: '500', color: '#9CA3AF' }}>
+                        {p.name.charAt(0)}
+                      </Text>
                     </View>
                   )}
                   <View className="min-w-0 flex-1">
-                    <Text style={{ fontSize: 13, fontWeight: '500', color: '#1F2937' }} numberOfLines={1}>{p.name}</Text>
+                    <Text
+                      style={{ fontSize: 13, fontWeight: '500', color: '#1F2937' }}
+                      numberOfLines={1}
+                    >
+                      {p.name}
+                    </Text>
                     <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{roleLabel}</Text>
                   </View>
-                  <Text style={{ fontSize: 12, fontWeight: '600', color: '#374151', ...NUM }}>{statLabel}</Text>
+                  <Text style={{ fontSize: 12, fontWeight: '600', color: '#374151', ...NUM }}>
+                    {statLabel}
+                  </Text>
                 </View>
               );
             })}
@@ -186,7 +274,14 @@ export default function TeamsScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: '팀 목록', headerShown: true, headerStyle: { backgroundColor: '#fff' }, headerShadowVisible: false }} />
+      <Stack.Screen
+        options={{
+          title: '팀 목록',
+          headerShown: true,
+          headerStyle: { backgroundColor: '#fff' },
+          headerShadowVisible: false,
+        }}
+      />
       <FlatList
         className="flex-1 bg-neutral-50"
         data={teams}

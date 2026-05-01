@@ -99,8 +99,14 @@ function DetailModal({
         </View>
 
         {/* PI 점수 */}
-        <View className="mb-4 items-center rounded-2xl py-3" style={{ backgroundColor: (row.team_color ?? '#ff4800') + '15' }}>
-          <Text className="text-3xl font-bold" style={[NUM, { color: row.team_color ?? '#ff4800' }]}>
+        <View
+          className="mb-4 items-center rounded-2xl py-3"
+          style={{ backgroundColor: (row.team_color ?? '#ff4800') + '15' }}
+        >
+          <Text
+            className="text-3xl font-bold"
+            style={[NUM, { color: row.team_color ?? '#ff4800' }]}
+          >
             {row.power_index.toFixed(1)}
           </Text>
           <Text className="text-xs text-neutral-400">Power Index</Text>
@@ -110,9 +116,15 @@ function DetailModal({
         <ScrollView showsVerticalScrollIndicator={false}>
           <View className="mb-2 flex-row border-b border-neutral-100 pb-2">
             <Text className="flex-1 text-[10px] font-semibold text-neutral-400">지표</Text>
-            <Text className="w-12 text-center text-[10px] font-semibold text-neutral-400">정규화</Text>
-            <Text className="w-12 text-center text-[10px] font-semibold text-neutral-400">가중치</Text>
-            <Text className="w-12 text-center text-[10px] font-semibold text-neutral-400">기여</Text>
+            <Text className="w-12 text-center text-[10px] font-semibold text-neutral-400">
+              정규화
+            </Text>
+            <Text className="w-12 text-center text-[10px] font-semibold text-neutral-400">
+              가중치
+            </Text>
+            <Text className="w-12 text-center text-[10px] font-semibold text-neutral-400">
+              기여
+            </Text>
           </View>
           {row.breakdown.map((b, i) => (
             <View key={i} className="flex-row items-center border-b border-neutral-50 py-2">
@@ -177,9 +189,7 @@ export default function PowerRankingPage() {
       <View className="flex-1 bg-neutral-50">
         {/* 필터 + 시즌명 */}
         <View className="bg-white px-4 pb-3 pt-2">
-          {seasonName ? (
-            <Text className="mb-2 text-xs text-neutral-400">{seasonName}</Text>
-          ) : null}
+          {seasonName ? <Text className="mb-2 text-xs text-neutral-400">{seasonName}</Text> : null}
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View className="flex-row" style={{ gap: 6 }}>
               {FILTER_OPTIONS.map((opt) => (
@@ -213,8 +223,12 @@ export default function PowerRankingPage() {
                 onPress={() => setDetailRow(item)}
               >
                 {/* 순위 */}
-                <View className={`h-6 w-6 items-center justify-center rounded-full ${item.rank <= 3 ? 'bg-primary/10' : 'bg-neutral-100'}`}>
-                  <Text className={`text-xs font-bold ${item.rank <= 3 ? 'text-primary' : 'text-neutral-500'}`}>
+                <View
+                  className={`h-6 w-6 items-center justify-center rounded-full ${item.rank <= 3 ? 'bg-primary/10' : 'bg-neutral-100'}`}
+                >
+                  <Text
+                    className={`text-xs font-bold ${item.rank <= 3 ? 'text-primary' : 'text-neutral-500'}`}
+                  >
                     {item.rank}
                   </Text>
                 </View>
@@ -229,7 +243,9 @@ export default function PowerRankingPage() {
                     />
                   ) : (
                     <View className="h-9 w-9 items-center justify-center rounded-full bg-neutral-100">
-                      <Text className="text-sm font-bold text-neutral-400">{item.name.charAt(0)}</Text>
+                      <Text className="text-sm font-bold text-neutral-400">
+                        {item.name.charAt(0)}
+                      </Text>
                     </View>
                   )}
                 </View>
@@ -257,11 +273,13 @@ export default function PowerRankingPage() {
               <View className="mx-4 mt-4 rounded-xl bg-neutral-100 p-3">
                 <View className="flex-row items-center" style={{ gap: 4 }}>
                   <Info size={12} color="#a3a3a3" />
-                  <Text className="text-[10px] font-semibold text-neutral-500">파워 인덱스(PI)란?</Text>
+                  <Text className="text-[10px] font-semibold text-neutral-500">
+                    파워 인덱스(PI)란?
+                  </Text>
                 </View>
                 <Text className="mt-1 text-[10px] leading-4 text-neutral-400">
-                  득점·도움·경기 평점·승률·액션 점수를 포지션별 가중치로 종합한 0~100점 스케일의 선수
-                  순위입니다. 선수를 터치하면 상세 계산 내역을 확인할 수 있습니다.
+                  득점·도움·경기 평점·승률·액션 점수를 포지션별 가중치로 종합한 0~100점 스케일의
+                  선수 순위입니다. 선수를 터치하면 상세 계산 내역을 확인할 수 있습니다.
                 </Text>
               </View>
             }

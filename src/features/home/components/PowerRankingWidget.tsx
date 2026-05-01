@@ -30,7 +30,9 @@ function RankRow({ row, rank }: { row: PowerRankingRow; rank: number }) {
       <View
         className={`h-5 w-5 items-center justify-center rounded-full ${rank <= 3 ? 'bg-primary/10' : ''}`}
       >
-        <Text className={`text-[10px] font-bold ${rank <= 3 ? 'text-primary' : 'text-neutral-400'}`}>
+        <Text
+          className={`text-[10px] font-bold ${rank <= 3 ? 'text-primary' : 'text-neutral-400'}`}
+        >
           {rank}
         </Text>
       </View>
@@ -65,7 +67,8 @@ function RankRow({ row, rank }: { row: PowerRankingRow; rank: number }) {
       <View
         className="items-center justify-center rounded-lg px-2 py-0.5"
         style={{
-          backgroundColor: rank === 1 ? (row.team_color ?? '#ff4800') : rank <= 3 ? '#111827' : '#F3F4F6',
+          backgroundColor:
+            rank === 1 ? (row.team_color ?? '#ff4800') : rank <= 3 ? '#111827' : '#F3F4F6',
         }}
       >
         <Text

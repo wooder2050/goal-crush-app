@@ -254,7 +254,7 @@ export default function ViewershipRatingsPage() {
   }, [filtered]);
 
   const seasonLabel = seasonFilter
-    ? seasonOptions.find((s) => s.value === seasonFilter)?.label ?? '시즌'
+    ? (seasonOptions.find((s) => s.value === seasonFilter)?.label ?? '시즌')
     : '전체 시즌';
   const sortLabel = SORT_OPTIONS.find((o) => o.value === sortBy)?.label ?? '정렬';
 

@@ -85,9 +85,7 @@ function PlayerSearchModal({
                 />
               ) : (
                 <View className="h-9 w-9 items-center justify-center rounded-full bg-neutral-100">
-                  <Text className="text-sm font-bold text-neutral-400">
-                    {item.name?.charAt(0)}
-                  </Text>
+                  <Text className="text-sm font-bold text-neutral-400">{item.name?.charAt(0)}</Text>
                 </View>
               )}
               <Text className="ml-3 text-sm font-medium text-neutral-800">{item.name}</Text>
@@ -260,7 +258,10 @@ function GoalTimingSection({ data }: { data: CompareResponse }) {
   const { goal_timing } = data;
   if (goal_timing.player1.total === 0 && goal_timing.player2.total === 0) return null;
 
-  const renderBar = (gt: { first_half: number; second_half: number; total: number }, color: string) => {
+  const renderBar = (
+    gt: { first_half: number; second_half: number; total: number },
+    color: string
+  ) => {
     if (gt.total === 0) return <View className="h-5 flex-1 rounded-full bg-neutral-100" />;
     const fhPct = (gt.first_half / gt.total) * 100;
     return (
@@ -318,7 +319,10 @@ function SeasonBreakdownSection({ data }: { data: CompareResponse }) {
         </View>
       </View>
       {data.season_breakdown.map((entry: SeasonBreakdownEntry) => (
-        <View key={entry.season_id} className="flex-row items-center border-b border-neutral-50 py-2.5">
+        <View
+          key={entry.season_id}
+          className="flex-row items-center border-b border-neutral-50 py-2.5"
+        >
           <Text className="flex-1 text-[11px] text-neutral-600" numberOfLines={1}>
             {sanitizeLabel(entry.season_name)}
           </Text>
@@ -351,7 +355,12 @@ export default function PlayerComparePage() {
       const id = Number(player1Param);
       const players = await searchPlayersByNamePrisma('');
       const found = players.find((p) => p.player_id === id);
-      if (found) return { player_id: found.player_id, name: found.name, profile_image_url: found.profile_image_url ?? null } as SelectedPlayer;
+      if (found)
+        return {
+          player_id: found.player_id,
+          name: found.name,
+          profile_image_url: found.profile_image_url ?? null,
+        } as SelectedPlayer;
       return null;
     },
     enabled: !!player1Param && !player1,
@@ -378,12 +387,7 @@ export default function PlayerComparePage() {
 
   const bothSelected = player1 != null && player2 != null;
 
-  const {
-    data,
-    isLoading,
-    isError,
-    refetch,
-  } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['playerCompare', player1?.player_id, player2?.player_id],
     queryFn: () => getPlayerCompare(player1!.player_id, player2!.player_id),
     enabled: bothSelected,
@@ -423,7 +427,10 @@ export default function PlayerComparePage() {
 
         {/* 비교 결과 */}
         {!bothSelected ? (
-          <EmptyState title="두 선수를 선택해 주세요" description="비교하고 싶은 선수 두 명을 검색하여 선택하세요." />
+          <EmptyState
+            title="두 선수를 선택해 주세요"
+            description="비교하고 싶은 선수 두 명을 검색하여 선택하세요."
+          />
         ) : isLoading ? (
           <LoadingSpinner />
         ) : isError ? (
@@ -432,13 +439,43 @@ export default function PlayerComparePage() {
           <View style={{ gap: 12 }} className="px-4 pb-10 pt-3">
             {/* 통계 비교 바 */}
             <Card className="px-4 py-2">
-              <StatBar label="경기" value1={data.player1.stats.matches} value2={data.player2.stats.matches} />
-              <StatBar label="득점" value1={data.player1.stats.goals} value2={data.player2.stats.goals} />
-              <StatBar label="도움" value1={data.player1.stats.assists} value2={data.player2.stats.assists} />
-              <StatBar label="공격포인트" value1={data.player1.stats.attack_points} value2={data.player2.stats.attack_points} />
-              <StatBar label="선방" value1={data.player1.stats.saves} value2={data.player2.stats.saves} />
-              <StatBar label="경고" value1={data.player1.stats.yellow_cards} value2={data.player2.stats.yellow_cards} higherIsBetter={false} />
-              <StatBar label="퇴장" value1={data.player1.stats.red_cards} value2={data.player2.stats.red_cards} higherIsBetter={false} />
+              <StatBar
+                label="경기"
+                value1={data.player1.stats.matches}
+                value2={data.player2.stats.matches}
+              />
+              <StatBar
+                label="득점"
+                value1={data.player1.stats.goals}
+                value2={data.player2.stats.goals}
+              />
+              <StatBar
+                label="도움"
+                value1={data.player1.stats.assists}
+                value2={data.player2.stats.assists}
+              />
+              <StatBar
+                label="공격포인트"
+                value1={data.player1.stats.attack_points}
+                value2={data.player2.stats.attack_points}
+              />
+              <StatBar
+                label="선방"
+                value1={data.player1.stats.saves}
+                value2={data.player2.stats.saves}
+              />
+              <StatBar
+                label="경고"
+                value1={data.player1.stats.yellow_cards}
+                value2={data.player2.stats.yellow_cards}
+                higherIsBetter={false}
+              />
+              <StatBar
+                label="퇴장"
+                value1={data.player1.stats.red_cards}
+                value2={data.player2.stats.red_cards}
+                higherIsBetter={false}
+              />
             </Card>
 
             <HeadToHeadSection data={data} />

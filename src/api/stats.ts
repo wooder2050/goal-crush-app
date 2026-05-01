@@ -489,9 +489,7 @@ export interface ViewershipRatingData {
   season: { season_id: number; season_name: string } | null;
 }
 
-export const getViewershipRatings = async (
-  seasonId?: number
-): Promise<ViewershipRatingData[]> => {
+export const getViewershipRatings = async (seasonId?: number): Promise<ViewershipRatingData[]> => {
   const qs = seasonId ? `?seasonId=${seasonId}` : '';
   return apiFetch(`/api/stats/viewership-ratings${qs}`);
 };

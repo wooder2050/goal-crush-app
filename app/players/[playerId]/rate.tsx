@@ -107,7 +107,11 @@ export default function PlayerRatePage() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data: player, isLoading, isError } = useQuery({
+  const {
+    data: player,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ['playerById', id],
     queryFn: () => getPlayerByIdPrisma(id),
   });
@@ -182,7 +186,9 @@ export default function PlayerRatePage() {
               />
             ) : (
               <View className="h-16 w-16 items-center justify-center rounded-full bg-neutral-100">
-                <Text className="text-2xl font-bold text-neutral-300">{player.name?.charAt(0)}</Text>
+                <Text className="text-2xl font-bold text-neutral-300">
+                  {player.name?.charAt(0)}
+                </Text>
               </View>
             )}
             <Text className="mt-2 text-base font-bold text-neutral-900">{player.name}</Text>
