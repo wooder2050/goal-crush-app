@@ -81,8 +81,18 @@ Object.defineProperty(getTeamSeasonStandingsPrisma, 'queryKey', {
 export const getTeamHighlightsPrisma = async (
   teamId: number
 ): Promise<{
-  top_appearances: { player_id: number; name: string; appearances: number } | null;
-  top_scorer: { player_id: number; name: string; goals: number } | null;
+  top_appearances: {
+    player_id: number;
+    name: string;
+    appearances: number;
+    profile_image_url?: string | null;
+  } | null;
+  top_scorer: {
+    player_id: number;
+    name: string;
+    goals: number;
+    profile_image_url?: string | null;
+  } | null;
   championships: {
     count: number;
     seasons: Array<{ season_id: number; season_name: string | null; year: number | null }>;
@@ -103,3 +113,94 @@ export const getTeamHighlightsPrisma = async (
 };
 
 Object.defineProperty(getTeamHighlightsPrisma, 'queryKey', { value: 'teamHighlights' });
+
+// --- 포메이션 ---
+
+export interface TeamFormationPosition {
+  position: string;
+  player_id: number;
+  name: string;
+  count: number;
+  jersey_number: number | null;
+  profile_image_url: string | null;
+  total_players: number;
+}
+
+export interface TeamFormation {
+  positions: TeamFormationPosition[];
+  season_name: string | null;
+}
+
+export const getTeamFormationPrisma = async (teamId: number): Promise<TeamFormation> => {
+  return apiFetch(`/api/teams/${teamId}/formation`);
+};
+
+Object.defineProperty(getTeamFormationPrisma, 'queryKey', { value: 'teamFormation' });
+
+// --- 최근 경기 폼 ---
+
+export interface TeamRecentMatch {
+  match_id: number;
+  match_date: string;
+  season_name: string;
+  opponent_name: string;
+  opponent_logo: string | null;
+  is_home: boolean;
+  home_score: number | null;
+  away_score: number | null;
+  penalty_home_score: number | null;
+  penalty_away_score: number | null;
+  result: 'W' | 'L' | 'D';
+}
+
+export const getTeamRecentFormPrisma = async (
+  teamId: number,
+  limit: number = 10
+): Promise<TeamRecentMatch[]> => {
+  return apiFetch(`/api/teams/${teamId}/recent-form?limit=${limit}`);
+};
+
+Object.defineProperty(getTeamRecentFormPrisma, 'queryKey', { value: 'teamRecentForm' });
+
+// --- TOP 선수 ---
+
+export interface TeamPlayerStatRow {
+  player_id: number;
+  name: string;
+  profile_image_url: string | null;
+  team_name: string | null;
+  team_logo: string | null;
+  value: number;
+}
+
+export interface TeamTopPlayersData {
+  topScorers: TeamPlayerStatRow[];
+  topAssists: TeamPlayerStatRow[];
+  topRated: TeamPlayerStatRow[];
+}
+
+export const getTeamTopPlayersPrisma = async (teamId: number): Promise<TeamTopPlayersData> => {
+  return apiFetch(`/api/teams/${teamId}/top-players`);
+};
+
+Object.defineProperty(getTeamTopPlayersPrisma, 'queryKey', { value: 'teamTopPlayers' });
+
+// --- 감독 시즌 기록 ---
+
+export interface CoachSeasonRecord {
+  season_name: string;
+  coach_id: number;
+  coach_name: string;
+  profile_image_url: string | null;
+  matches: number;
+  wins: number;
+  losses: number;
+  win_rate: number;
+  ppg: number;
+}
+
+export const getTeamCoachRecordsPrisma = async (teamId: number): Promise<CoachSeasonRecord[]> => {
+  return apiFetch(`/api/teams/${teamId}/coach-records`);
+};
+
+Object.defineProperty(getTeamCoachRecordsPrisma, 'queryKey', { value: 'teamCoachRecords' });

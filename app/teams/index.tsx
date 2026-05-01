@@ -1,125 +1,245 @@
 import { useQuery } from '@tanstack/react-query';
+import { Image } from 'expo-image';
 import { Stack, useRouter } from 'expo-router';
+import { useMemo } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 
 import { getTeamsPrisma } from '@/api/teams';
 import { ErrorState } from '@/components/ErrorState';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { TeamLogo } from '@/components/TeamLogo';
-import { Card } from '@/components/ui/Card';
 import type { TeamWithExtras } from '@/features/teams/types';
-
-/* ─── helpers ─────────────────────────────────────────────── */
+import { sanitizeLabel } from '@/lib/utils';
 
 const NUM = { fontVariant: ['tabular-nums' as const] };
 
-function inferLeague(seasonName: string | null): string {
-  if (!seasonName) return 'other';
-  const name = seasonName.toLowerCase();
-  if (name.includes('champion') || name.includes('챔피언')) return 'cup';
-  if (name.includes('sbs') || name.includes('cup') || name.includes('컵')) return 'cup';
-  return 'league';
+function isLightColor(hex: string | null | undefined): boolean {
+  if (!hex) return true;
+  const c = hex.replace('#', '');
+  if (c.length < 6) return true;
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 > 186;
 }
 
-/* ─── Team Card ───────────────────────────────────────────── */
+function inferLeague(seasonName: string | null): string {
+  if (!seasonName) return 'other';
+  const n = seasonName.toLowerCase();
+  if (n.includes('슈퍼') || n.includes('super') || n.includes('파일럿') || n.includes('시즌 1'))
+    return 'super';
+  if (n.includes('g리그') || n.includes('g-league') || n.includes('조별')) return 'g-league';
+  if (
+    n.includes('champion') ||
+    n.includes('챔피언') ||
+    n.includes('sbs') ||
+    n.includes('cup') ||
+    n.includes('컵')
+  )
+    return 'cup';
+  return 'other';
+}
 
-function TeamCard({ team, rank }: { team: TeamWithExtras; rank: number }) {
+function TeamCard({ team }: { team: TeamWithExtras }) {
   const router = useRouter();
+
+  const primaryColor = team.primary_color ?? '#1F2937';
+  const headerBg = isLightColor(primaryColor)
+    ? team.secondary_color && !isLightColor(team.secondary_color)
+      ? team.secondary_color
+      : '#1F2937'
+    : primaryColor;
+  const light = isLightColor(headerBg);
+  const headerText = light ? '#111827' : '#FFFFFF';
+  const headerSub = light ? '#4B5563' : 'rgba(255,255,255,0.7)';
+
   const championships = team.championships ?? [];
-  const totalWins = championships.length;
-  const cupWins = championships.filter((c) => inferLeague(c.season_name) === 'cup').length;
-  const leagueWins = Math.max(totalWins - cupWins, 0);
-  const hasWins = leagueWins > 0 || cupWins > 0;
+  const leagueWins = championships.filter((c) => {
+    const league = inferLeague(c.season_name ?? null);
+    return league === 'super' || league === 'g-league';
+  });
+  const cupWins = championships.filter((c) => {
+    const league = inferLeague(c.season_name ?? null);
+    return league === 'cup';
+  });
+  const totalWins = leagueWins.length + cupWins.length;
+  const reps = (team.representative_players ?? []).slice(0, 2);
 
   return (
     <Pressable
+      className="overflow-hidden rounded-2xl border border-neutral-100 bg-white active:scale-[0.98]"
       onPress={() => router.push(`/teams/${team.team_id}`)}
-      className="active:scale-[0.98]"
-      style={{ flex: 1 }}
+      accessibilityRole="button"
+      accessibilityLabel={`${team.team_name} 팀 상세보기`}
     >
-      <Card className="flex-1 overflow-hidden p-0">
-        {/* Rank indicator - top-left corner */}
-        {rank <= 3 && (
+      {/* 팀색 배너 + 로고 + 이름 + 우승 요약 */}
+      <View
+        className="flex-row items-center px-4 py-3.5"
+        style={{
+          backgroundColor: headerBg,
+          gap: 10,
+          borderTopLeftRadius: 16,
+          borderTopRightRadius: 16,
+        }}
+      >
+        {/* 로고 - 팀 색상 링 보존 */}
+        <View
+          style={{
+            width: 46,
+            height: 46,
+            borderRadius: 23,
+            borderWidth: 2,
+            borderColor: light ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.6)',
+            backgroundColor: '#fff',
+            overflow: 'hidden',
+          }}
+        >
+          {team.logo ? (
+            <Image
+              source={{ uri: team.logo }}
+              style={{ width: 42, height: 42, borderRadius: 21 }}
+              contentFit="cover"
+            />
+          ) : (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ color: headerBg, fontSize: 16, fontWeight: 'bold' }}>
+                {team.team_name?.charAt(0)}
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {/* 팀명 + 창단년도 */}
+        <View className="min-w-0 flex-1">
+          <Text style={{ color: headerText, fontSize: 16, fontWeight: '600' }} numberOfLines={1}>
+            {team.team_name}
+          </Text>
+          <Text style={{ color: headerSub, fontSize: 12, marginTop: 1 }}>
+            {team.founded_year ? `${team.founded_year}년 창단` : ''}
+          </Text>
+        </View>
+
+        {/* 우승 요약 칩 (단순화) */}
+        {totalWins > 0 && (
           <View
-            className="absolute left-0 top-0 z-10 rounded-br-xl rounded-tl-2xl px-2.5 py-1"
             style={{
-              backgroundColor: rank === 1 ? '#fbbf24' : rank === 2 ? '#d1d5db' : '#fb923c',
+              backgroundColor: 'rgba(0,0,0,0.25)',
+              borderRadius: 12,
+              paddingHorizontal: 8,
+              paddingVertical: 4,
             }}
           >
-            <Text className="text-[10px] font-extrabold text-white" style={NUM}>
-              {rank}
+            <Text style={{ color: '#fff', fontSize: 11, fontWeight: '700' }}>
+              {leagueWins.length > 0 && `⭐${leagueWins.length}`}
+              {leagueWins.length > 0 && cupWins.length > 0 && ' '}
+              {cupWins.length > 0 && `🏆${cupWins.length}`}
             </Text>
           </View>
         )}
+      </View>
 
-        {/* Logo section */}
-        <View className="items-center px-3 pb-1 pt-5">
-          <View
-            className="items-center justify-center rounded-full bg-white"
-            style={{
-              width: 72,
-              height: 72,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.06,
-              shadowRadius: 8,
-              elevation: 2,
-            }}
-          >
-            <TeamLogo uri={team.logo} size={64} teamName={team.team_name} />
+      {/* 정보 영역 - 고정 높이로 일관성 확보 */}
+      <View className="px-4 py-3.5" style={{ minHeight: 120 }}>
+        {/* 우승 요약 (1줄 제한) */}
+        {championships.length > 0 ? (
+          <View className="flex-row flex-wrap" style={{ gap: 4 }}>
+            {leagueWins.slice(0, 3).map((c) => (
+              <View
+                key={c.season_id}
+                className="flex-row items-center rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5"
+                style={{ gap: 2 }}
+              >
+                <Text style={{ fontSize: 10 }}>⭐</Text>
+                <Text style={{ fontSize: 10, fontWeight: '500', color: '#92400E' }}>
+                  {sanitizeLabel(c.season_name ?? '')}
+                </Text>
+              </View>
+            ))}
+            {cupWins.slice(0, 2).map((c) => (
+              <View
+                key={c.season_id}
+                className="flex-row items-center rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5"
+                style={{ gap: 2 }}
+              >
+                <Text style={{ fontSize: 10 }}>🏆</Text>
+                <Text style={{ fontSize: 10, fontWeight: '500', color: '#5B21B6' }}>
+                  {sanitizeLabel(c.season_name ?? '')}
+                </Text>
+              </View>
+            ))}
+            {championships.length > 5 && (
+              <View className="rounded-full bg-neutral-100 px-2 py-0.5">
+                <Text style={{ fontSize: 10, fontWeight: '500', color: '#6B7280' }}>
+                  +{championships.length - 5}
+                </Text>
+              </View>
+            )}
           </View>
-        </View>
+        ) : (
+          <Text style={{ fontSize: 11, color: '#9CA3AF' }}>우승 기록 없음</Text>
+        )}
 
-        {/* Info section */}
-        <View className="items-center px-3 pb-4 pt-2">
-          <Text className="text-center text-[13px] font-bold text-neutral-900" numberOfLines={1}>
-            {team.team_name}
-          </Text>
-
-          {team.founded_year ? (
-            <Text className="mt-0.5 text-[10px] text-neutral-400" style={NUM}>
-              {team.founded_year}년 창단
-            </Text>
-          ) : (
-            <View style={{ height: 14 }} />
-          )}
-
-          {/* Championship badges */}
-          {hasWins ? (
-            <View className="mt-2 flex-row flex-wrap justify-center" style={{ gap: 3 }}>
-              {leagueWins > 0 && (
+        {/* 대표 선수 (최대 2명, 하단 고정) */}
+        {reps.length > 0 && (
+          <View className="mt-auto pt-3" style={{ gap: 8 }}>
+            {reps.map((p) => {
+              const role = (p as { role?: string }).role ?? 'appearances';
+              const statLabel =
+                role === 'goals'
+                  ? `${p.goals ?? 0}골`
+                  : role === 'assists'
+                    ? `${p.assists ?? 0}도움`
+                    : `${p.appearances}경기`;
+              const roleLabel =
+                role === 'goals' ? '최다 득점' : role === 'assists' ? '최다 도움' : '최다 출전';
+              return (
                 <View
-                  className="flex-row items-center rounded-full bg-amber-50 px-2 py-0.5"
-                  style={{ gap: 2 }}
+                  key={`${p.player_id}-${role}`}
+                  className="flex-row items-center"
+                  style={{ gap: 8 }}
                 >
-                  <Text className="text-[9px]">⭐</Text>
-                  <Text className="text-[9px] font-bold text-amber-700" style={NUM}>
-                    리그 {leagueWins}
+                  {p.profile_image_url ? (
+                    <Image
+                      source={{ uri: p.profile_image_url }}
+                      style={{ width: 30, height: 30, borderRadius: 15 }}
+                      contentFit="cover"
+                    />
+                  ) : (
+                    <View
+                      style={{
+                        width: 30,
+                        height: 30,
+                        borderRadius: 15,
+                        backgroundColor: '#F3F4F6',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Text style={{ fontSize: 11, fontWeight: '500', color: '#9CA3AF' }}>
+                        {p.name.charAt(0)}
+                      </Text>
+                    </View>
+                  )}
+                  <View className="min-w-0 flex-1">
+                    <Text
+                      style={{ fontSize: 13, fontWeight: '500', color: '#1F2937' }}
+                      numberOfLines={1}
+                    >
+                      {p.name}
+                    </Text>
+                    <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{roleLabel}</Text>
+                  </View>
+                  <Text style={{ fontSize: 12, fontWeight: '600', color: '#374151', ...NUM }}>
+                    {statLabel}
                   </Text>
                 </View>
-              )}
-              {cupWins > 0 && (
-                <View
-                  className="flex-row items-center rounded-full bg-primary/8 px-2 py-0.5"
-                  style={{ gap: 2 }}
-                >
-                  <Text className="text-[9px]">🏆</Text>
-                  <Text className="text-[9px] font-bold text-primary" style={NUM}>
-                    컵 {cupWins}
-                  </Text>
-                </View>
-              )}
-            </View>
-          ) : (
-            <View style={{ height: 20 }} />
-          )}
-        </View>
-      </Card>
+              );
+            })}
+          </View>
+        )}
+      </View>
     </Pressable>
   );
 }
-
-/* ─── Main Screen ─────────────────────────────────────────── */
 
 export default function TeamsScreen() {
   const { data, isLoading, isError, refetch } = useQuery({
@@ -127,21 +247,36 @@ export default function TeamsScreen() {
     queryFn: getTeamsPrisma,
   });
 
+  const teams = useMemo(() => {
+    if (!Array.isArray(data)) return [];
+
+    let maxSeasonId = 0;
+    for (const t of data) {
+      for (const ts of t.team_seasons ?? []) {
+        const sid = ts.season?.season_id ?? 0;
+        if (sid > maxSeasonId) maxSeasonId = sid;
+      }
+    }
+
+    return [...data].sort((a: TeamWithExtras, b: TeamWithExtras) => {
+      const aInCurrent = (a.team_seasons ?? []).some((ts) => ts.season?.season_id === maxSeasonId);
+      const bInCurrent = (b.team_seasons ?? []).some((ts) => ts.season?.season_id === maxSeasonId);
+      if (aInCurrent !== bInCurrent) return aInCurrent ? -1 : 1;
+      const ca = a.championships_count ?? 0;
+      const cb = b.championships_count ?? 0;
+      if (cb !== ca) return cb - ca;
+      return a.team_name.localeCompare(b.team_name);
+    });
+  }, [data]);
+
   if (isLoading) return <LoadingSpinner />;
   if (isError) return <ErrorState onRetry={() => refetch()} />;
-
-  const teams = (data ?? []).sort((a: TeamWithExtras, b: TeamWithExtras) => {
-    const ca = a.championships_count ?? 0;
-    const cb = b.championships_count ?? 0;
-    if (cb !== ca) return cb - ca;
-    return a.team_name.localeCompare(b.team_name);
-  });
 
   return (
     <>
       <Stack.Screen
         options={{
-          title: '팀',
+          title: '팀 목록',
           headerShown: true,
           headerStyle: { backgroundColor: '#fff' },
           headerShadowVisible: false,
@@ -150,18 +285,16 @@ export default function TeamsScreen() {
       <FlatList
         className="flex-1 bg-neutral-50"
         data={teams}
-        numColumns={2}
         keyExtractor={(item) => String(item.team_id)}
-        renderItem={({ item, index }) => (
-          <View className="w-1/2 px-1.5">
-            <TeamCard team={item} rank={index + 1} />
+        renderItem={({ item }) => (
+          <View className="px-4 pb-3">
+            <TeamCard team={item} />
           </View>
         )}
-        columnWrapperStyle={{ paddingHorizontal: 12, marginBottom: 10 }}
-        contentContainerStyle={{ paddingTop: 14, paddingBottom: 32 }}
+        contentContainerStyle={{ paddingTop: 12, paddingBottom: 32 }}
         ListHeaderComponent={
           <View className="mb-2 px-4">
-            <Text className="text-[13px] text-neutral-400">우승 횟수 순</Text>
+            <Text style={{ fontSize: 12, color: '#9CA3AF' }}>총 {teams.length}팀</Text>
           </View>
         }
         showsVerticalScrollIndicator={false}

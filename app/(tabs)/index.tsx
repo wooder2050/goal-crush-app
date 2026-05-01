@@ -8,6 +8,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { CareerStatsWidget } from '@/features/home/components/CareerStatsWidget';
 import { MatchesWidget } from '@/features/home/components/MatchesWidget';
 import { PlayerStatsWidget } from '@/features/home/components/PlayerStatsWidget';
+import { PowerRankingWidget } from '@/features/home/components/PowerRankingWidget';
 import { StandingsWidget } from '@/features/home/components/StandingsWidget';
 import { sanitizeLabel } from '@/lib/utils';
 
@@ -38,9 +39,7 @@ export default function HomeScreen() {
           style={{ height: 80, opacity: 0.03 }}
         />
         <View className="px-5 pt-4">
-          <Text className="text-2xl font-bold tracking-tight text-neutral-900">
-            골크러쉬 데이터센터
-          </Text>
+          <Text className="text-2xl font-bold tracking-tight text-neutral-900">GTN 데이터센터</Text>
 
           {data.currentSeason && (
             <Pressable
@@ -71,6 +70,7 @@ export default function HomeScreen() {
           seasonId={seasonId}
         />
         <StandingsWidget groups={data.standings} seasonId={seasonId} />
+        <PowerRankingWidget />
         <PlayerStatsWidget
           topScorers={data.topScorers}
           topAssists={data.topAssists}

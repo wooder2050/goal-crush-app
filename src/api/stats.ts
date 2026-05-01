@@ -364,3 +364,339 @@ export const getPenaltyShootout = async (params: {
   if (params.sort_by) qs.append('sort_by', params.sort_by);
   return apiFetch(`/api/stats/penalty-shootout?${qs}`);
 };
+
+// --- 선수 비교 ---
+
+export interface PlayerCompareStats {
+  matches: number;
+  goals: number;
+  assists: number;
+  attack_points: number;
+  yellow_cards: number;
+  red_cards: number;
+  saves: number;
+  seasons_played: number;
+}
+
+export interface PlayerCompareData {
+  player_id: number;
+  name: string;
+  profile_image_url: string | null;
+  jersey_number: number | null;
+  position: string | null;
+  team_name: string | null;
+  team_logo: string | null;
+  team_color: string | null;
+  stats: PlayerCompareStats;
+}
+
+export interface GoalTimingData {
+  first_half: number;
+  second_half: number;
+  total: number;
+}
+
+export interface SeasonBreakdownEntry {
+  season_id: number;
+  season_name: string;
+  player1: { goals: number; assists: number; matches: number };
+  player2: { goals: number; assists: number; matches: number };
+}
+
+export interface CompareResponse {
+  player1: PlayerCompareData;
+  player2: PlayerCompareData;
+  head_to_head: {
+    total_matches: number;
+    player1_wins: number;
+    player2_wins: number;
+  };
+  goal_timing: {
+    player1: GoalTimingData;
+    player2: GoalTimingData;
+  };
+  season_breakdown: SeasonBreakdownEntry[];
+}
+
+export const getPlayerCompare = async (
+  player1Id: number,
+  player2Id: number,
+  seasonId?: number | string
+): Promise<CompareResponse> => {
+  const qs = new URLSearchParams({
+    player1_id: String(player1Id),
+    player2_id: String(player2Id),
+  });
+  if (seasonId && seasonId !== 'all') qs.append('season_id', String(seasonId));
+  return apiFetch(`/api/stats/player-compare?${qs}`);
+};
+
+Object.defineProperty(getPlayerCompare, 'queryKey', { value: 'playerCompare' });
+
+// --- 파워 랭킹 ---
+
+export interface PowerRankingBreakdown {
+  label: string;
+  normalized: number;
+  weight: number;
+  contribution: number;
+  raw_value: string;
+}
+
+export interface PowerRankingRow {
+  rank: number;
+  player_id: number;
+  name: string;
+  profile_image_url: string | null;
+  jersey_number: number | null;
+  team_name: string;
+  team_logo: string | null;
+  team_color: string | null;
+  position: string;
+  power_index: number;
+  matches: number;
+  goals: number;
+  assists: number;
+  win_rate: number;
+  avg_stats_rating: number | null;
+  avg_xt_rating: number | null;
+  action_per_match: number;
+  clean_sheets: number;
+  save_pct: number | null;
+  breakdown: PowerRankingBreakdown[];
+}
+
+export interface PowerRankingData {
+  rankings: PowerRankingRow[];
+  season: { season_id: number; season_name: string } | null;
+}
+
+export const getPowerRanking = async (limit: number = 100): Promise<PowerRankingData> => {
+  return apiFetch(`/api/stats/power-ranking?limit=${limit}`);
+};
+
+Object.defineProperty(getPowerRanking, 'queryKey', { value: 'powerRanking' });
+
+// --- 방송 데이터 ---
+
+export interface ViewershipRatingData {
+  match_id: number;
+  match_date: string;
+  label: string;
+  rating_nationwide: number | null;
+  rating_metropolitan: number | null;
+  broadcast_time: string | null;
+  season: { season_id: number; season_name: string } | null;
+}
+
+export const getViewershipRatings = async (seasonId?: number): Promise<ViewershipRatingData[]> => {
+  const qs = seasonId ? `?seasonId=${seasonId}` : '';
+  return apiFetch(`/api/stats/viewership-ratings${qs}`);
+};
+
+Object.defineProperty(getViewershipRatings, 'queryKey', { value: 'viewershipRatings' });
+
+// --- 선수 패스맵 ---
+
+export interface PassMapPass {
+  action_id: number;
+  period_id: 1 | 2;
+  start_x: number;
+  start_y: number;
+  end_x: number;
+  end_y: number;
+  result: string;
+  time_seconds: number;
+}
+
+export interface PassMapMatch {
+  match_id: number;
+  match_date: string;
+  season_name: string;
+  home_team_name: string;
+  home_team_logo: string | null;
+  away_team_name: string;
+  away_team_logo: string | null;
+  home_score: number | null;
+  away_score: number | null;
+  is_home: boolean;
+  total_passes: number;
+  successful_passes: number;
+}
+
+export interface PassMapData {
+  matches: PassMapMatch[];
+  match_id: number;
+  flip_first_half: boolean;
+  passes: PassMapPass[];
+}
+
+export const getPlayerPassMap = async (
+  playerId: number,
+  matchId?: number
+): Promise<PassMapData> => {
+  const qs = new URLSearchParams({ player_id: String(playerId) });
+  if (matchId) qs.append('match_id', String(matchId));
+  return apiFetch(`/api/stats/player-pass-map?${qs}`);
+};
+
+Object.defineProperty(getPlayerPassMap, 'queryKey', { value: 'playerPassMap' });
+
+// --- 선수 특성 ---
+
+export interface PlayerTraitsData {
+  traits: {
+    touches?: number;
+    chance_creation?: number;
+    shots?: number;
+    goals?: number;
+    defensive?: number;
+    pass_accuracy?: number;
+    gk_distribution?: number;
+    clean_sheet?: number;
+    goals_conceded?: number;
+    saves?: number;
+    clearances?: number;
+    matches_analyzed: number;
+    is_goalkeeper: boolean;
+  };
+}
+
+export const getPlayerTraits = async (playerId: number): Promise<PlayerTraitsData> => {
+  return apiFetch(`/api/stats/player-traits?player_id=${playerId}`);
+};
+
+Object.defineProperty(getPlayerTraits, 'queryKey', { value: 'playerTraits' });
+
+// --- 시즌 상세 통계 ---
+
+export interface StatItem {
+  value: number;
+  percentile: number;
+  percentile_per_match: number;
+}
+
+export interface PlayerDetailedStatsResponse {
+  seasons: Array<{ season_id: number; season_name: string; match_count: number }>;
+  season_id: number;
+  total_players: number;
+  is_goalkeeper: boolean;
+  data: {
+    matches: number;
+    shooting?: Record<string, StatItem>;
+    passing?: Record<string, StatItem>;
+    possession?: Record<string, StatItem>;
+    defense?: Record<string, StatItem>;
+    distribution?: Record<string, StatItem>;
+    discipline?: Record<string, StatItem>;
+  };
+}
+
+export const getPlayerDetailedStats = async (
+  playerId: number,
+  seasonId?: number
+): Promise<PlayerDetailedStatsResponse> => {
+  const qs = new URLSearchParams({ player_id: String(playerId) });
+  if (seasonId) qs.append('season_id', String(seasonId));
+  return apiFetch(`/api/stats/player-detailed-stats?${qs}`);
+};
+
+Object.defineProperty(getPlayerDetailedStats, 'queryKey', { value: 'playerDetailedStats' });
+
+// --- 현재 시즌 통계 ---
+
+export interface PlayerCurrentSeasonStats {
+  season_id: number;
+  season_name: string;
+  team: { team_id: number; team_name: string; logo: string | null } | null;
+  is_goalkeeper: boolean;
+  matches: number;
+  starters: number;
+  goals: number;
+  assists: number;
+  yellow_cards: number;
+  red_cards: number;
+  clean_sheets: number;
+  goals_conceded: number;
+  pk_saves: number;
+  avg_rating: number | null;
+  avg_xt_rating: number | null;
+}
+
+export const getPlayerCurrentSeason = async (
+  playerId: number
+): Promise<PlayerCurrentSeasonStats | null> => {
+  try {
+    const res = await apiFetch<{ data: PlayerCurrentSeasonStats | null }>(
+      `/api/stats/player-current-season?player_id=${playerId}`
+    );
+    return res.data;
+  } catch {
+    return null;
+  }
+};
+
+Object.defineProperty(getPlayerCurrentSeason, 'queryKey', { value: 'playerCurrentSeason' });
+
+// --- 경기 로그 ---
+
+export interface PlayerMatchLogEntry {
+  match_id: number;
+  date: string;
+  season: string | null;
+  opponent_name: string;
+  opponent_logo: string | null;
+  result: 'W' | 'D' | 'L';
+  home_score: number | null;
+  away_score: number | null;
+  penalty_home_score: number | null;
+  penalty_away_score: number | null;
+  goals: number;
+  assists: number;
+  yellow_card: number;
+  red_card: number;
+  rating: number | null;
+  xt_rating: number | null;
+}
+
+export interface PlayerMatchLogResponse {
+  items: PlayerMatchLogEntry[];
+  total: number;
+  limit: number;
+  nextCursor: string | null;
+  hasNext: boolean;
+}
+
+export const getPlayerMatchLog = async (
+  playerId: number,
+  cursor?: string | null,
+  limit: number = 10
+): Promise<PlayerMatchLogResponse> => {
+  const qs = new URLSearchParams({ player_id: String(playerId), limit: String(limit) });
+  if (cursor) qs.append('cursor', cursor);
+  return apiFetch(`/api/stats/player-match-log?${qs}`);
+};
+
+Object.defineProperty(getPlayerMatchLog, 'queryKey', { value: 'playerMatchLog' });
+
+// --- 어시스트 로그 ---
+
+export interface PlayerAssistLogEntry {
+  match_id: number;
+  date: string;
+  season: string | null;
+  opponent_name: string;
+  opponent_logo: string | null;
+  result: 'W' | 'D' | 'L';
+  home_score: number | null;
+  away_score: number | null;
+  penalty_home_score: number | null;
+  penalty_away_score: number | null;
+  player_assists: number;
+}
+
+export const getPlayerAssistLog = async (playerId: number): Promise<PlayerAssistLogEntry[]> => {
+  return apiFetch(`/api/stats/player-assist-log?player_id=${playerId}`);
+};
+
+Object.defineProperty(getPlayerAssistLog, 'queryKey', { value: 'playerAssistLog' });
