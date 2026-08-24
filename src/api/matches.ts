@@ -492,7 +492,9 @@ export const getMatchDetailedStatsPrisma = async (
 
 export const getMatchPassMapPrisma = async (matchId: number): Promise<TeamPassNetworkData[]> => {
   try {
-    return await apiFetch(`/api/admin/matches/${matchId}/actions/pass-map`);
+    // 회원용 패스맵 경로 — admin 경로는 관리자 인증이 걸려 일반 회원은 401.
+    // 비로그인은 서버가 200+빈 배열을 반환 (확장 기록 로그인 게이트)
+    return await apiFetch(`/api/matches/${matchId}/pass-map`);
   } catch {
     return [];
   }
